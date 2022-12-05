@@ -43,6 +43,26 @@
 	}
 	pipe.arrayFrom = arrayFrom;
 
+	function ProceArray() {
+		this.index = {};
+	}
+	var proto = {
+		then: function (todo, ordo) {
+			for (var i = this.length - 1; i >= 0; i--) this[i].tpus(todo, ordo);
+		},
+		trap: function (ordo) {
+			return this.then(null, ordo);
+		},
+		supp: function (ordo) {
+			for (var i = this.length - 1; i >= 0; i--) if (this[i].uncaught) this[i].tpus(null, ordo);
+		},
+		pointer: 0,
+		index: null
+	};
+	ProceArray.prototype = [];
+	for (var i in proto) ProceArray.prototype[i] = proto[i];
+	pipe.ProceArray = ProceArray;
+
 	function getList(list) {
 		return isArrayLike(list[0]) ? list[0] : list;
 	}
