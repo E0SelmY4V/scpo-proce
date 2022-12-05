@@ -48,5 +48,7 @@
 	}
 	pipe.getList = getList;
 
+	function Proce(doexpr, config, cleared) { }
+
 	function pipe() { }
 }());
