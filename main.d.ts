@@ -36,4 +36,6 @@ export namespace scpoProce {
 		ordo?: CbNor<E>
 	}
 }
+export function scpoProce<P extends any[], E extends any[] = [any]>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config): scpoProce.Proce<P>
+export function scpoProce<P extends any[]>(...arg: P): scpoProce.Proce<P, []>
 export default scpoProce
