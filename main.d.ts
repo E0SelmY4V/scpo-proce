@@ -47,12 +47,16 @@ export namespace scpoProce {
 		take<R, D extends number = -1, T1 = t.tp<P, E, D>>(todo: t.tf<T1, R, 0>, ordo?: t.tf<T1, R, 1>, depth?: D): Proce<[R]>
 		conf<E1>(config?: Config, ordo?: CbNor<E, E1>): t.cp<P, E1>
 		configAll(n?: Config): Proce<P, E>
+		todo<P1 extends any[]>(...n: P1): Proce<P1, []>
+		ordo<E1 extends any[]>(...n: E1): Proce<[], E1>
 	}
 	function then<R>(todo?: CbNor<[], R>, ordo?: CbNor<[], R>): Proce<[R]>
 	function trap<R>(ordo?: CbNor<[], R>): Proce<[R]>
 	function next<P1 extends any[], E1 extends any[], R>(doexpr?: CbNxt<P1, [], E1, R>, ordo?: CbNor<E1, R>, config?: Config): Proce<P1, E1>
 	function conf<E1>(config?: Config, ordo?: CbNor<[], E1>): t.cp<[], E1>
 	function configAll(): Proce<[], []>
+	function todo<P1 extends any[]>(...n: P1): Proce<P1, []>
+	function ordo<E1 extends any[]>(...n: E1): Proce<[], E1>
 	namespace t {
 		type tp<P extends any[], E extends any[], D extends number> = ProceTaked<Proce<P, E>, D>
 		type tf<T1, R, W> = CbNor<T1 extends Proce<infer P, infer E> ? W extends 0 ? P : E : W extends 0 ? [] : [any], R>
