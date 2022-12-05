@@ -63,6 +63,32 @@
 	for (var i in proto) ProceArray.prototype[i] = proto[i];
 	pipe.ProceArray = ProceArray;
 
+	function ConfigClass(n, proc) {
+		for (var i in n) this[i] = n[i];
+		if (typeof proc === 'object') this.proc = proc;
+	}
+	ConfigClass.configAll = function (n) {
+		for (var i in n) ConfigClass.prototype[i] = n[i];
+		Proce.prototype.uncaught = typeof ConfigClass.prototype.ordo !== 'function';
+	};
+	ConfigClass.prototype = {
+		set: function (n) {
+			for (var i in n) this[i] = n[i];
+			this.proc.uncaught = typeof this.ordo !== 'function';
+		},
+		get: function (n) {
+			if (typeof n !== 'object') return this;
+			for (var i in this) if (typeof n[i] === 'undefined') n[i] = this[i];
+			return n;
+		},
+		trap: 'all',
+		proc: null,
+		todo: null,
+		ordo: null
+	};
+	pipe.ConfigClass = ConfigClass;
+	pipe.config = new ConfigClass();
+
 	function getList(list) {
 		return isArrayLike(list[0]) ? list[0] : list;
 	}
