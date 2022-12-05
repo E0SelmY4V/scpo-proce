@@ -79,7 +79,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
 
 ## 其他
 
-- 本项目其实是把 [Scpos Web-Request](https://github.com/E0SelmY4V/scpo-webreq.js) 的代码加强后制作而成的。
+- 本项目其实是把 [Scpos Web-Request](https://github.com/E0SelmY4V/scpo-webreq) 的代码加强后制作而成的。
   如果你是编写 HTML 文档，建议使用对网络请求支持更多的 Scpos Web-Request，其中包括更诡异的参数传递、更全面的的预设配置等。
 
   （但是已经二百年没更新过了）

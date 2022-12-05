@@ -82,7 +82,7 @@ The oldest browser it support is IE6.
 
 ## More
 
-- In fact, this project is made by [*Scpos Web-Request*](https://github.com/E0SelmY4V/scpo-webreq.js).
+- In fact, this project is made by [*Scpos Web-Request*](https://github.com/E0SelmY4V/scpo-webreq).
   If you are doing HTML development, The *Scpos Web-Request* is the better choice, including the delivery of parameter that more eerie, the preset configuration that more comprehensive and so on.
 
   (But it haven't updated for about two hundred years.)
