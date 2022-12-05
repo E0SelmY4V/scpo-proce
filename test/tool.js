@@ -7,3 +7,4 @@ function webReq(url, callback) {
 	xh.open("GET", url);
 	xh.send();
 }
+typeof module !== 'undefined' && (module.exports.testWebsite = testWebsite);
