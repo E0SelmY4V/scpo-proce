@@ -168,9 +168,83 @@
 				else if (isBrowser && !window.console) throw errObj;
 				else return console.error('scpo-proce Uncaught', errObj);
 			});
+		},
+		tpus: function (todo, ordo) {
+			var orf = typeof ordo === 'function', tof = typeof todo === 'function';
+			if (this.uncaught) this.uncaught = !orf;
+			if (this.cleared) {
+				this.pointer++;
+				var hid = todo && todo.hidden;
+				hid || (clearTimeout(this.lastDef), this.lastDef = null);
+				try {
+					this.lastErr === null ? tof && (
+						this.lastRtn = this.doRtn(todo, this.lastRtn)
+					) : orf && (
+						hid && (clearTimeout(this.lastDef), this.lastDef = null),
+						clearTimeout(this.lastErr), this.lastErr = null,
+						this.lastRtn = this.doRtn(ordo, this.lastRtn)
+					);
+				} catch (errObj) { this.lastRtn = errObj, this.toss(errObj); }
+			} else this.queueordo.push(ordo), this.queuetodo.push(todo);
+		},
+		then: function (todo, ordo) {
+			if (!isProce(this)) return new Proce(null, null, true).then(todo, ordo);
+			if (this.config.trap !== 'none') this.getBefore()[
+				this.config.trap === 'all' ? 'trap' : 'supp'
+			](ordo);
+			return this.tpus(todo, ordo), this;
+		},
+		trap: function (ordo) {
+			return this.then(null, ordo);
+		},
+		next: function (doexpr, ordo, config) {
+			if (!isProce(this)) return new Proce(null, null, true).next(doexpr, ordo, config);
+			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
+			var proc = new Proce(null, this.config.get(config)),
+				cf = function () { return proc.act(doexpr, arguments); };
+			return cf.hidden = true, this.then(cf, ordo), proc.before = this, proc.trap(ordo);
+		},
+		take: function (todo, ordo, depth) {
+			typeof todo === 'number' ? (depth = todo) : typeof depth === 'undefined' && (depth = -1);
+			var _this = this, testf, proc = new Proce(function (todo, ordo) {
+				_this.then(testf = function (rtn) {
+					isThenable(rtn) && depth-- !== 0 ? rtn.then(testf, ordo) : apply(todo, null, arguments);
+				}, ordo);
+			});
+			return typeof todo === 'function' || typeof ordo === 'function' ? proc.then(todo, ordo) : proc;
+		},
+		getBefore: function (n) {
+			return this.before ? n ? n.index[this.id] ? n : (
+				n.push(this), n.index[this.id] = true, this.before.getBefore(n)
+			) : this.before.getBefore(new ProceArray()) : n || new ProceArray();
+		},
+		setBefore: function (n) {
+			if (n && (n.pointer || (n.pointer = 0)) !== n.length) return (this.before = n[n.pointer++]).setBefore(n);
+			else delete this.before;
+		},
+		conf: function (config, ordo) {
+			if (!isProce(this)) return new Proce(null, null, true).conf(config);
+			var tcfg = this.config, cf = function (n) { return tcfg.set(config), n; }
+			cf.hidden = true;
+			return this.then(cf, ordo);
+		},
+		configAll: function (config) {
+			return ConfigClass.configAll(config), this;
 		}
 	}
 	pipe.Proce = Proce;
 
 	function pipe() { }
+	var proto = Proce.prototype;
+	var pilist = [
+		'then',
+		'trap',
+		'next',
+		'conf',
+		'configAll'
+	];
+	for (var i = pilist.length - 1; i >= 0; --i) pipe[pilist[i]] = proto[pilist[i]];
+	pipe.emptyProce = function (config) {
+		return new Proce(null, config)
+	};
 }());
