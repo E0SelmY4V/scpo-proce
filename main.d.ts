@@ -24,5 +24,16 @@ export namespace scpoProce {
 		index: { [id: number]: true }
 		pointer: number
 	}
+	type Config = Omit<ConfigClass, 'get' | 'set'> | ConfigClass
+	class ConfigClass<P extends any[] = any[], E extends any[] = [any]> {
+		constructor(n: Config, proc?: Proce<P, E>)
+		static configAll(n?: Config): void
+		set(n?: Config): void
+		get(n?: Config): Config
+		trap: 'all' | 'no-trap' | 'none'
+		proc?: Proce<P, E>
+		todo?: CbNor<P>
+		ordo?: CbNor<E>
+	}
 }
 export default scpoProce
