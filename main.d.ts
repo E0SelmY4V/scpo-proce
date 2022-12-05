@@ -1,4 +1,4 @@
-import { } from 'accurtype'
+import { SntXcrNum } from 'accurtype'
 export namespace scpoProce {
 	type CbNor<P extends any[] = any[], R = any, T extends any[] = []> = (...arg: [...P, ...T]) => R
 	type CbCur<P extends any[] = any[], E extends any[] = [any], R = any> = CbNor<[CbNor<P, void> | never, CbNor<E, void> | never], R, any[]>
@@ -11,5 +11,10 @@ export namespace scpoProce {
 	function isArrayLike(n: any): n is ArrayLike<any>
 	function arrayFrom<T>(n: ArrayLike<T>): T[]
 	function getList<T>(list: T): ListGot<T, ArrayLike<any>>
+	type ProceN = Proce<any[], any[]>
+	type ProceArgs<T> = T extends Proce<infer A, any[]> ? A : [T]
+	type ProceFilled<T extends number, A extends ProceN[] = []> = T extends 0 ? A : ProceFilled<SntXcrNum<9, T, number>, [ProceN, ...A]>
+	class Proce<P extends any[] = any[], E extends any[] = [any]> {
+	}
 }
 export default scpoProce
