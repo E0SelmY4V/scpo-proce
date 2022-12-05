@@ -14,7 +14,28 @@ export namespace scpoProce {
 	type ProceN = Proce<any[], any[]>
 	type ProceArgs<T> = T extends Proce<infer A, any[]> ? A : [T]
 	type ProceFilled<T extends number, A extends ProceN[] = []> = T extends 0 ? A : ProceFilled<SntXcrNum<9, T, number>, [ProceN, ...A]>
+	function getId(): number
 	class Proce<P extends any[] = any[], E extends any[] = [any]> {
+		constructor(doexpr?: CbCur<P, E>, config?: Config, cleared?: boolean)
+		id: number
+		queuetodo: CbNor<P>[]
+		queueordo: CbNor<E>[]
+		cleared: boolean
+		acted: boolean
+		nmArg: boolean
+		lastRtn: P | P[0] | E | E[0]
+		lastErr: STimer
+		lastDef: STimer
+		config: ConfigClass
+		pointer: number
+		before?: ProceN
+		uncaught: boolean
+		doRtn<R>(expr: CbNor<P, R>, param: P | P[0] | E | E[0]): R
+		act<R>(doexpr: CbCur<P, E, R>): R
+		act<R, R0 extends any[] = []>(doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): R
+		clear(param: P | P[0]): void
+		exeordo(param: E | E[0]): any
+		toss: (errObj: E[0]) => void
 	}
 	class ProceArray<P extends any[] = any[], E extends any[] = [any]> extends Array<Proce<P, E>> {
 		constructor(...proce: Proce<P, E>[])
