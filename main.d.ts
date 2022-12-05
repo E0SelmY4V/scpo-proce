@@ -16,5 +16,13 @@ export namespace scpoProce {
 	type ProceFilled<T extends number, A extends ProceN[] = []> = T extends 0 ? A : ProceFilled<SntXcrNum<9, T, number>, [ProceN, ...A]>
 	class Proce<P extends any[] = any[], E extends any[] = [any]> {
 	}
+	class ProceArray<P extends any[] = any[], E extends any[] = [any]> extends Array<Proce<P, E>> {
+		constructor(...proce: Proce<P, E>[])
+		then(todo?: CbNor<P>, ordo?: CbNor<E>): void
+		trap(ordo?: CbNor<E>): void
+		supp(ordo?: CbNor<E>): void
+		index: { [id: number]: true }
+		pointer: number
+	}
 }
 export default scpoProce
