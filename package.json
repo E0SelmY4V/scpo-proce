@@ -1,0 +1,25 @@
+{
+  "name": "scpo-proce",
+  "version": "0.9.0",
+  "description": "Make your async programming easier",
+  "main": "main.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/E0SelmY4V/scpo-proce.git"
+  },
+  "keywords": [
+    "async",
+    "promise",
+    "callback",
+    "ie",
+    "ie6",
+    "util"
+  ],
+  "author": "e0selmy4v",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/E0SelmY4V/scpo-proce/issues"
+  },
+  "homepage": "https://github.com/E0SelmY4V/scpo-proce#readme"
+}
