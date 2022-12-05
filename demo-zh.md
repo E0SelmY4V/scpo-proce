@@ -1,15 +1,16 @@
-# Usage
+# 使用场景
 
-## Index
+## 目录
 
-- [Usual Async](#usual-async)
-- [Continuous Async](#continuous-async)
-- [Random-step Async](#random-step-async)
-- [Multiple-results Async](#multiple-results-async)
+- [普通的异步](#普通的异步)
+- [连续异步](#连续异步)
+- [不知道异步次数的连续异步](#不知道异步次数的连续异步)
+- [多参数回调](#多参数回调)
 
-## Usual Async
+## 普通的异步
 
-For this asynchronous operation:
+本项目有跟`Promise`差不多的用法。
+对于一个异步操作：
 
 ```javascript
 async0(param, result => {
@@ -18,7 +19,7 @@ async0(param, result => {
 });
 ```
 
-### Promise
+我们可以使用`Promise`：
 
 ```javascript
 new Promise((res, rej) => async0(param, res))
@@ -31,7 +32,7 @@ new Promise((res, rej) => async0(param, res))
   });
 ```
 
-### Scpos Process
+也可以使用`scpoProce`达到同样的效果：
 
 ```javascript
 const { scpoProce } = require('scpo-proce');
@@ -46,11 +47,12 @@ scpoProce((res, rej) => async0(param, res))
   });
 ```
 
-## Continuous Async
+但本项目的功能不止于此。
+除了兼容到 IE6，还与`Promise`有一个最大的区别：本项目包装了连续异步操作。
 
-The difference between *Scpos Process* and `Promise` includes not only the compatibility of IE 6, but also the ability of doing the asynchronous operation in a row.
+## 连续异步
 
-For this asynchronous operation:
+对于一个连续异步操作：
 
 ```javascript
 function main() {
@@ -77,7 +79,7 @@ function main() {
 main();
 ```
 
-It can looks like this if you use *Scpos Process*:
+使用本项目后：
 
 ```javascript
 const { scpoProce } = require('scpo-proce');
@@ -110,7 +112,8 @@ function main() {
 main();
 ```
 
-So many `next` may still not looking, so there is a simple method `scpoProce.snake()` which can also package these async operation into one async object to make the error catching easier.
+一堆 next 可能还是不好看，所以还有一个简便函数`scpoProce.snake()`。
+此函数还可把这堆连续异步包装成一个异步过程，方便捕获错误：
 
 ```javascript
 const { scpoProce } = require('scpo-proce');
@@ -143,12 +146,12 @@ function main() {
 main();
 ```
 
-## Random-step Async
+## 不知道异步次数的连续异步
 
-The thorny async problems *Scpos Process* can resolve are more than usual async problems.
+本项目可以解决的麻烦异步问题并不止于结构十分明显的异步程序。
+例如我们在编写 node.js 时可能会有这么一个需求：根据一个路径列表，挨个判断列表中的文件是否存在，若存在则输出文件路径并停止判断，若都不存在则输出`false`。
 
-For example, You want to judge whether the files in the list exist one by one, stopping the judgement and returning the name of file as soon as you find that files is exists, returning `false` if none of the files in the list exist.
-You may coding like this recursion:
+一般来说我们可能会编写如下代码：
 
 ```javascript
 const fs = require('fs');
@@ -164,7 +167,11 @@ module.exports = (() => {
 })();
 ```
 
-Or you can use `async/await`:
+这是个递归。
+实现的方法我们能看出来：若`subCheck()`函数发现文件存在或列表已经检查完毕，则会跳出递归，执行回调，否则将会继续调用自己进行路径的判断。
+为了防止异步过程中受到干扰，还要通过返回函数来传递函数的内部变量，而不是使用公共的变量。
+
+我们还可以用`async/await`来实现：
 
 ```javascript
 const fs = require('fs');
@@ -180,7 +187,7 @@ module.exports = async (list, callback) => {
 };
 ```
 
-Or using *Scpos Process* to resolve elegantly with one sentence:
+或者用本项目一行语句解决：
 
 ```javascript
 const fs = require('fs');
@@ -189,9 +196,9 @@ const { scpoProce } = require('scpo-proce');
 module.exports = (list, callback) => scpoProce.snake(list.map(file => (res, rej) => scpoProce(res => fs.access(list[i], fs.constants.F_OK, res)).then(isNoFile => isNoFile ? res() : rej(file)))).then(() => false, e => e).then(callback);
 ```
 
-## Multiple-results Async
+## 多参数回调
 
-To package `fs.readFile()` into a function that can called with `await`, usually, you may coding like this:
+本项目支持使用`async/await`。例如如果我们想把`fs.readFile()`包装为可以使用`await`的函数，我们一般会编写如下代码：
 
 ```javascript
 const fs = require('fs');
@@ -201,11 +208,7 @@ function easyRead(file) {
 }
 ```
 
-Because the callback of `Promise` cannot take more than one parameter, we need to do a callback in the callback.
-
-Not very elegant.
-
-You can avoid this problem by using *Scpos Process*:
+由于`Promise`的回调函数无法接受一个以上的参数，我们只能通过在回调里插入回调，这个样子并不是特别优雅。使用本项目可以避免这一问题：
 
 ```javascript
 const fs = require('fs');
@@ -217,9 +220,7 @@ function easyRead(file) {
 }
 ```
 
-Not only `than`, but also `scpoProce.snake()`, `scpoProce.all()`, `scpoProce.one()` can take many parameters, too.
-
-For example, `scpoProce.all()`, which like `Promise.all()`:
+不仅是普通的`then`方法的回调可以获取多个参数，`scpoProce.snake()`、`scpoProce.all()`、`scpoProce.one()`等将多个异步包装成一个异步的方法也支持获取多个参数。例如类似`Promise.all()`的`scpoProce.all()`方法：
 
 ```javascript
 const { scpoProce } = require('scpo-proce');
@@ -232,4 +233,4 @@ scpoProce.all(
 );
 ```
 
-The output of console is `abcd`.
+最后应该输出`"abcd"`。
