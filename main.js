@@ -230,8 +230,17 @@
 		},
 		configAll: function (config) {
 			return ConfigClass.configAll(config), this;
+		},
+		todo: function () {
+			var proc = new Proce(null, null, true);
+			return proc.lastRtn = arguments, proc;
+		},
+		ordo: function () {
+			var proc = new Proce(null, null, true);
+			return proc.lastRtn = arguments, proc.toss(arguments[0]), proc;
 		}
-	}
+	};
+	var voidP = Proce.prototype.todo;
 	pipe.Proce = Proce;
 
 	function pipe() { }
@@ -241,7 +250,9 @@
 		'trap',
 		'next',
 		'conf',
-		'configAll'
+		'configAll',
+		'todo',
+		'ordo'
 	];
 	for (var i = pilist.length - 1; i >= 0; --i) pipe[pilist[i]] = proto[pilist[i]];
 	pipe.emptyProce = function (config) {
