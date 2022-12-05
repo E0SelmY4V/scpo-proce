@@ -238,6 +238,35 @@
 		ordo: function () {
 			var proc = new Proce(null, null, true);
 			return proc.lastRtn = arguments, proc.toss(arguments[0]), proc;
+		},
+		all: function () {
+			var l = getList(arguments), r = [[]], i = l.length, c = i;
+			return new Proce(function (todo, ordo) {
+				while (--i >= 0) isThenable(l[i]) ? (function (i) {
+					l[i].then(function () {
+						var a = arguments, j = a.length;
+						while (--j >= 0) (r[j] || (r[j] = []))[i] = a[j];
+						if (--c === 0) apply(todo, null, r);
+					}, ordo);
+				})(i) : (--c, r[0][i] = l[i]);
+				c || apply(todo, null, r);
+			});
+		},
+		one: function () {
+			var l = getList(arguments), noClear = true;
+			return new Proce(function (todo, ordo) {
+				for (var i = 0; i < l.length; i++)
+					if (isThenable(l[i])) l[i].then(todo, ordo);
+					else if (!this.acted) return todo(l[i]);
+					else return;
+			});
+		},
+		snake: function () {
+			var l = getList(arguments), _this = this;
+			return new Proce(function (todo, ordo) {
+				for (var i = 0; i < l.length; i++) _this = _this.next(l[i], ordo);
+				_this.then(todo, ordo);
+			});
 		}
 	};
 	var voidP = Proce.prototype.todo;
@@ -256,7 +285,10 @@
 		'conf',
 		'configAll',
 		'todo',
-		'ordo'
+		'ordo',
+		'snake',
+		'all',
+		'one'
 	];
 	for (var i = pilist.length - 1; i >= 0; --i) pipe[pilist[i]] = proto[pilist[i]];
 	pipe.emptyProce = function (config) {
