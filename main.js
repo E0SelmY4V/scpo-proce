@@ -243,7 +243,11 @@
 	var voidP = Proce.prototype.todo;
 	pipe.Proce = Proce;
 
-	function pipe() { }
+	function pipe(doexpr, config) {
+		return typeof doexpr === 'function'
+			? new Proce(doexpr, config)
+			: apply(voidP, null, arguments);
+	}
 	var proto = Proce.prototype;
 	var pilist = [
 		'then',
