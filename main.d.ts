@@ -1,4 +1,4 @@
-import { SntXcrNum } from 'accurtype'
+import { SntXcrNum, ArrayAccur } from 'accurtype'
 export namespace scpoProce {
 	type CbNor<P extends any[] = any[], R = any, T extends any[] = []> = (...arg: [...P, ...T]) => R
 	type CbCur<P extends any[] = any[], E extends any[] = [any], R = any> = CbNor<[CbNor<P, void> | never, CbNor<E, void> | never], R, any[]>
@@ -15,6 +15,9 @@ export namespace scpoProce {
 	type ProceArgs<T> = T extends Proce<infer A, any[]> ? A : [T]
 	type ProceFilled<T extends number, A extends ProceN[] = []> = T extends 0 ? A : ProceFilled<SntXcrNum<9, T, number>, [ProceN, ...A]>
 	type ProceTaked<T, D extends number = -1> = D extends 0 ? T : T extends Proce<[infer F extends ProceN, ...any[]], any[]> ? ProceTaked<F, SntXcrNum<9, D, number>> : T
+	type SnakeList<T extends any[][], E extends any[] = [any]> = T extends [infer P0 extends any[], infer P extends any[], ...infer K extends any[]] ? [CbNxt<P, P0, E>, ...SnakeList<[P, ...K], E>] : []
+	type SnakeRslt<T extends any[], F = 0> = T extends [CbNxt<infer P, infer S>, ...infer K extends any[]] ? [...(F extends 0 ? [S, P] : [P]), ...SnakeRslt<K, 1>] : [];
+	type OnedArgs<T extends any[]> = T extends [infer N, ...infer L] ? ProceArgs<N> | OnedArgs<L> : T extends [] ? never : T extends (infer K)[] ? ProceArgs<K> : never;
 	function getId(): number
 	class Proce<P extends any[] = any[], E extends any[] = [any]> {
 		constructor(doexpr?: CbCur<P, E>, config?: Config, cleared?: boolean)
@@ -49,6 +52,11 @@ export namespace scpoProce {
 		configAll(n?: Config): Proce<P, E>
 		todo<P1 extends any[]>(...n: P1): Proce<P1, []>
 		ordo<E1 extends any[]>(...n: E1): Proce<[], E1>
+		snake(n?: []): Proce<P, E>
+		snake<F extends CbNxt<any[], P>, A extends CbNxt[], E1 extends any[], B extends any[] = t.sf<F, P, A>>(n: t.sm<B, E1, F, A>): t.st<B, E1>
+		snake<F extends CbNxt<any[], P>, A extends CbNxt[], E1 extends any[], B extends any[] = t.sf<F, P, A>>(...n: t.sm<B, E1, F, A>): t.st<B, E1>
+		one<T extends ArrayAccur>(n: T): Proce<OnedArgs<T>, []>
+		// all()
 	}
 	function then<R>(todo?: CbNor<[], R>, ordo?: CbNor<[], R>): Proce<[R]>
 	function trap<R>(ordo?: CbNor<[], R>): Proce<[R]>
@@ -57,10 +65,18 @@ export namespace scpoProce {
 	function configAll(): Proce<[], []>
 	function todo<P1 extends any[]>(...n: P1): Proce<P1, []>
 	function ordo<E1 extends any[]>(...n: E1): Proce<[], E1>
+	function snake(n?: []): Proce<[], []>
+	function snake<F extends CbNxt<any[], []>, A extends CbNxt[], E1 extends any[], B extends any[] = t.sf<F, [], A>>(n: t.sm<B, E1, F, A>): t.st<B, E1>
+	function snake<F extends CbNxt<any[], []>, A extends CbNxt[], E1 extends any[], B extends any[] = t.sf<F, [], A>>(...n: t.sm<B, E1, F, A>): t.st<B, E1>
+	function one<T extends ArrayAccur>(n: T): Proce<OnedArgs<T>, []>
+	// function all()
 	namespace t {
 		type tp<P extends any[], E extends any[], D extends number> = ProceTaked<Proce<P, E>, D>
 		type tf<T1, R, W> = CbNor<T1 extends Proce<infer P, infer E> ? W extends 0 ? P : E : W extends 0 ? [] : [any], R>
 		type cp<P extends any[], E1> = Proce<P extends [] ? [] : [P[0]], [E1]>
+		type sf<F, P extends any[], A extends any[]> = SnakeRslt<[CbNxt<F extends CbNxt<infer K> ? K : any[], P>, ...A]>
+		type sm<B extends any[], E1 extends any[], F, A extends any[]> = SnakeList<B, E1> | [F, ...A]
+		type st<B extends any[], E1 extends any[]> = Proce<B extends [...any[], infer K] ? K : any[], E1>
 	}
 	class ProceArray<P extends any[] = any[], E extends any[] = [any]> extends Array<Proce<P, E>> {
 		constructor(...proce: Proce<P, E>[])
