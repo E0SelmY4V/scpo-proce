@@ -1,7 +1,7 @@
 /**
  * 幻想私社异步过程类
  * @author E0SelmY4V
- * @version 1.1.2022112000
+ * @version 1.1.2022122000
  * @link https://github.com/E0SelmY4V/scpo-proce
  */
 'use strict';
@@ -59,13 +59,13 @@
 	}
 	var proto = {
 		then: function (todo, ordo) {
-			for (var i = this.length - 1; i >= 0; i--) this[i].tpus(todo, ordo);
+			for (var i = this.length - 1; i >= 0; i--) tpus(this[i], todo, ordo);
 		},
 		trap: function (ordo) {
 			return this.then(null, ordo);
 		},
 		supp: function (ordo) {
-			for (var i = this.length - 1; i >= 0; i--) if (this[i].uncaught) this[i].tpus(null, ordo);
+			for (var i = this.length - 1; i >= 0; i--) if (this[i].uncaught) tpus(this[i], null, ordo);
 		},
 		pointer: 0,
 		index: null
@@ -100,9 +100,89 @@
 	pipe.ConfigClass = ConfigClass;
 	pipe.config = new ConfigClass();
 
+	function doRtn(_t, expr, param) {
+		if (_t.nmArg) return expr(param);
+		else {
+			_t.nmArg = true;
+			return apply(expr, null, param);
+		}
+	}
+	pipe.doRtn;
+
+	function act(_t, doexpr, args) {
+		var params = [
+			function () { if (noClear) noClear = false, clear(_t, arguments); },
+			function () { if (noClear) noClear = false, clear(_t, exeordo(_t, arguments)); }
+		], noClear = true;
+		if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
+		try {
+			var r = apply(doexpr, _t, params);
+			return _t.config.trap !== 'none' && isThenable(r) && (typeof r.getBefore === 'function'
+				? r.getBefore(new ProceArray())[
+					_t.config.trap === 'all' ? 'trap' : 'supp'
+				](params[1])
+				: r.then(null, params[1])
+			), _t.acted = true, r;
+		} catch (errObj) { _t.acted = true; return params[1](errObj); }
+	}
+	pipe.act = act;
+
+	function clear(_t, param) {
+		var i = _t.pointer, q = _t.queuetodo, f = true;
+		while (++i < q.length) if (typeof q[i] === 'function') {
+			q[i].hidden || (f = false);
+			try { param = doRtn(_t, q[i], param); }
+			catch (errObj) { _t.pointer = i, param = exeordo(_t, errObj), i = _t.pointer; }
+		}
+		f && (_t.lastDef = setTimeout(function () {
+			_t.then(_t.config.todo, _t.config.ordo);
+		})), _t.lastRtn = param, _t.cleared = true;
+	}
+	pipe.clear = clear;
+
+	function exeordo(_t, param) {
+		var i = _t.pointer, q = _t.queueordo;
+		while (++i < q.length) if (typeof q[i] === 'function') {
+			_t.pointer = i;
+			try { return doRtn(_t, q[i], param); }
+			catch (errObj) { return exeordo(_t, errObj); }
+		}
+		return _t.pointer = i, toss(_t, _t.nmArg ? param : param[0]), param;
+	}
+	pipe.exeordo = exeordo;
+
+	function toss(_t, errObj) {
+		_t.lastErr = setTimeout(function () {
+			if (_t.lastDef !== null) return toss(_t, errObj);
+			else if (isBrowser && !window.console) throw errObj;
+			else return console.error('scpo-proce Uncaught', errObj);
+		});
+	}
+	pipe.toss = toss;
+
+	function tpus(_t, todo, ordo) {
+		var orf = typeof ordo === 'function', tof = typeof todo === 'function';
+		if (_t.uncaught) _t.uncaught = !orf;
+		if (_t.cleared) {
+			_t.pointer++;
+			var hid = todo && todo.hidden;
+			hid || (clearTimeout(_t.lastDef), _t.lastDef = null);
+			try {
+				_t.lastErr === null ? tof && (
+					_t.lastRtn = doRtn(_t, todo, _t.lastRtn)
+				) : orf && (
+					hid && (clearTimeout(_t.lastDef), _t.lastDef = null),
+					clearTimeout(_t.lastErr), _t.lastErr = null,
+					_t.lastRtn = doRtn(_t, ordo, _t.lastRtn)
+				);
+			} catch (errObj) { _t.lastRtn = errObj, toss(_t, errObj); }
+		} else _t.queueordo.push(ordo), _t.queuetodo.push(todo);
+	}
+	pipe.tpus = tpus;
+
 	function Proce(doexpr, config, cleared) {
 		this.queuetodo = [], this.queueordo = [], this.config = new ConfigClass(config, this), this.id = getId();
-		cleared ? this.cleared = true : typeof doexpr === 'function' && this.act(doexpr);
+		cleared ? this.cleared = true : typeof doexpr === 'function' && act(this, doexpr);
 	}
 	Proce.prototype = {
 		id: NaN,
@@ -118,81 +198,12 @@
 		pointer: -1,
 		before: null,
 		uncaught: true,
-		doRtn: function (expr, param) {
-			if (this.nmArg) return expr(param);
-			else {
-				this.nmArg = true;
-				return apply(expr, null, param);
-			}
-		},
-		act: function (doexpr, args) {
-			var t = this, params = [
-				function () { if (noClear) noClear = false, t.clear(arguments); },
-				function () { if (noClear) noClear = false, t.clear(t.exeordo(arguments)); }
-			], noClear = true;
-			if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
-			try {
-				var r = apply(doexpr, this, params);
-				return this.config.trap !== 'none' && isThenable(r) && (typeof r.getBefore === 'function'
-					? r.getBefore(new ProceArray())[
-						this.config.trap === 'all' ? 'trap' : 'supp'
-					](params[1])
-					: r.then(null, params[1])
-				), this.acted = true, r;
-			} catch (errObj) { this.acted = true; return params[1](errObj); }
-		},
-		clear: function (param) {
-			var i = this.pointer, q = this.queuetodo, f = true, t = this;
-			while (++i < q.length) if (typeof q[i] === 'function') {
-				q[i].hidden || (f = false);
-				try { param = this.doRtn(q[i], param); }
-				catch (errObj) { this.pointer = i, param = this.exeordo(errObj), i = this.pointer; }
-			}
-			f && (this.lastDef = setTimeout(function () {
-				t.then(t.config.todo, t.config.ordo);
-			})), this.lastRtn = param, this.cleared = true;
-		},
-		exeordo: function (param) {
-			var i = this.pointer, q = this.queueordo;
-			while (++i < q.length) if (typeof q[i] === 'function') {
-				this.pointer = i;
-				try { return this.doRtn(q[i], param); }
-				catch (errObj) { return this.exeordo(errObj); }
-			}
-			return this.pointer = i, this.toss(this.nmArg ? param : param[0]), param;
-		},
-		toss: function (errObj) {
-			var t = this;
-			this.lastErr = setTimeout(function () {
-				if (t.lastDef !== null) return t.toss(errObj);
-				else if (isBrowser && !window.console) throw errObj;
-				else return console.error('scpo-proce Uncaught', errObj);
-			});
-		},
-		tpus: function (todo, ordo) {
-			var orf = typeof ordo === 'function', tof = typeof todo === 'function';
-			if (this.uncaught) this.uncaught = !orf;
-			if (this.cleared) {
-				this.pointer++;
-				var hid = todo && todo.hidden;
-				hid || (clearTimeout(this.lastDef), this.lastDef = null);
-				try {
-					this.lastErr === null ? tof && (
-						this.lastRtn = this.doRtn(todo, this.lastRtn)
-					) : orf && (
-						hid && (clearTimeout(this.lastDef), this.lastDef = null),
-						clearTimeout(this.lastErr), this.lastErr = null,
-						this.lastRtn = this.doRtn(ordo, this.lastRtn)
-					);
-				} catch (errObj) { this.lastRtn = errObj, this.toss(errObj); }
-			} else this.queueordo.push(ordo), this.queuetodo.push(todo);
-		},
 		then: function (todo, ordo) {
 			if (!isProce(this)) return new Proce(null, null, true).then(todo, ordo);
 			if (this.config.trap !== 'none') this.getBefore()[
 				this.config.trap === 'all' ? 'trap' : 'supp'
 			](ordo);
-			return this.tpus(todo, ordo), this;
+			return tpus(this, todo, ordo), this;
 		},
 		trap: function (ordo) {
 			return this.then(null, ordo);
@@ -201,7 +212,7 @@
 			if (!isProce(this)) return new Proce(null, null, true).next(doexpr, ordo, config);
 			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
 			var proc = new Proce(null, this.config.get(config)),
-				cf = function () { return proc.act(doexpr, arguments); };
+				cf = function () { return act(proc, doexpr, arguments); };
 			return cf.hidden = true, this.then(cf, ordo), proc.before = this, proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
@@ -219,8 +230,9 @@
 			) : this.before.getBefore(new ProceArray()) : n || new ProceArray();
 		},
 		setBefore: function (n) {
-			if (n && (n.pointer || (n.pointer = 0)) !== n.length) return (this.before = n[n.pointer++]).setBefore(n);
+			if (n && (n.pointer || (n.pointer = 0)) !== n.length) (this.before = n[n.pointer++]).setBefore(n);
 			else delete this.before;
+			return this;
 		},
 		conf: function (config, ordo) {
 			if (!isProce(this)) return new Proce(null, null, true).conf(config);
@@ -237,7 +249,7 @@
 		},
 		ordo: function () {
 			var proc = new Proce(null, null, true);
-			return proc.lastRtn = arguments, proc.toss(arguments[0]), proc;
+			return proc.lastRtn = arguments, toss(proc, arguments[0]), proc;
 		},
 		all: function () {
 			var l = getList(arguments), r = [[]], i = l.length, c = i;
