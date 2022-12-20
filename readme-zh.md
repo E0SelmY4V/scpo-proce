@@ -38,8 +38,6 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   var scpoProce = require('scpo-proce')['default'];
   ```
 
-  [查看代码示例](test0.js)
-
 - ### ES6
 
   如果使用的是 ES 模块，可以像这样
@@ -47,8 +45,6 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   ```javascript
   import scpoProce from 'scpo-proce';
   ```
-
-  [查看代码示例](test1.ts)
 
 - ### 浏览器
 
@@ -60,12 +56,45 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
 
   就可以通过`window.scpoProce`或者`scpoProce`来使用了。
 
-  [查看代码示例](test2.hta)
+## 使用提示
 
-## 使用建议
+- 本项目有些地方与 ES6 `Promise` 不同。
+  例如 `Promise.then` 是一个微任务，但本项目的 `ScpoProce.then` 不是。
+  有时候放在 `ScpoProce.then` 里的回调会像被同步执行一样。
 
-- 用前可以看看源代码。
-- 其他建议请自己在使用中发现。
+  ```javascript
+  setTimeout(() => console.log(1));
+
+  new Promise((resolve) => {
+    console.log(2);
+    resolve();
+  }).then(() => {
+    console.log(3);
+  });
+
+  console.log(4);
+
+  // Promise.then 是异步微任务
+  // 控制台输出 2431
+  ```
+
+  ```javascript
+  import scpoProce from 'scpo-proce';
+
+  setTimeout(() => console.log(1));
+
+  scpoProce((resolve) => {
+    console.log(2);
+    resolve();
+  }).then(() => {
+    console.log(3);
+  });
+
+  console.log(4);
+
+  // scpoProce.then 不是微任务
+  // 控制台输出 2341
+  ```
 
 ## 使用感想
 

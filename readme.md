@@ -38,8 +38,6 @@ The oldest browser it support is IE6.
   var scpoProce = require('scpo-proce')["default"];
   ```
 
-  [View example](test0.js)
-
 - ### ES6
 
   If you are using ES module, you can:
@@ -47,8 +45,6 @@ The oldest browser it support is IE6.
   ```javascript
   import scpoProce from 'scpo-proce';
   ```
-
-  [View example](test1.ts)
 
 - ### HTML
 
@@ -60,12 +56,43 @@ The oldest browser it support is IE6.
 
   And then, you can use it through `window.scpoProce` or `scpoProce`.
 
-  [View example](test2.hta)
-
 ## Tips
 
-- You can take a look at the source code before use.
-- That's all.
+- The behavior of *Scpos Process* is different from ES6 `Promise`. `ScpoProce.then` is Not a microtask like `Promise.then`. Sometimes, callbacks in `ScpoProce.then` are more like being executed synchronically.
+
+  ```javascript
+  setTimeout(() => console.log(1));
+
+  new Promise((resolve) => {
+    console.log(2);
+    resolve();
+  }).then(() => {
+    console.log(3);
+  });
+
+  console.log(4);
+
+  // Promise.then is a microtask.
+  // The output will be "2431".
+  ```
+
+  ```javascript
+  import scpoProce from 'scpo-proce';
+
+  setTimeout(() => console.log(1));
+
+  scpoProce((resolve) => {
+    console.log(2);
+    resolve();
+  }).then(() => {
+    console.log(3);
+  });
+
+  console.log(4);
+
+  // Just like sync, not a microtask.
+  // The output will be "2341".
+  ```
 
 ## Experience After Use
 
