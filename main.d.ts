@@ -20,7 +20,7 @@ export namespace scpoProce {
 	type ProceArgs<T> = T extends Proce<infer A, any[]> ? A : [T]
 	type ProceErrs<T> = T extends Proce<any[], infer A> ? A : []
 	type ProceFilled<T extends number, A extends ProceN[] = []> = T extends 0 ? A : ProceFilled<SntXcrNum<9, T, number>, [ProceN, ...A]>
-	type ProceTaked<P extends any[], E extends any[], D extends number = -1> = D extends 0 ? Proce<P, E> : P extends [Proce<infer PI, infer EI>, ...any[]] ? ProceTaked<PI, EI | E, SntXcrNum<9, D, number>> : Proce<P, E>
+	type ProceTaked<P extends any[], E extends any[], D extends number = -1> = D extends 0 ? Proce<P, E> : P extends [Proce<infer PI, infer EI>, ...any[]] ? (number extends D ? Proce<P, E> : never) | ProceTaked<PI, EI | E, SntXcrNum<9, D, number>> : Proce<P, E>
 	// type SnakeList<T extends any[][], E extends any[] = [any]> = T extends [infer P0 extends any[], infer P extends any[], ...infer K extends any[]] ? [CbNxt<P, P0, E>, ...SnakeList<[P, ...K], E>] : []
 	// type SnakeRslt<T extends any[], F = 0> = T extends [CbNxt<infer P, infer S>, ...infer K extends any[]] ? [...(F extends 0 ? [S, P] : [P]), ...SnakeRslt<K, 1>] : [];
 	type OnedArgs<T extends any[]> = T extends (infer K)[] ? ProceArgs<K> : never;
