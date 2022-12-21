@@ -1,7 +1,7 @@
 /**
  * 幻想私社异步过程类
  * @author E0SelmY4V
- * @version 1.1.2022122000
+ * @version 1.1.2022122010
  * @link https://github.com/E0SelmY4V/scpo-proce
  */
 'use strict';
