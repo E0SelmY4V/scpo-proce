@@ -9,7 +9,10 @@
 	var isBrowser = typeof exports === 'undefined', voidArray = [];
 	(pipe.isBrowser = isBrowser)
 		? window.scpoProce = pipe
-		: exports.scpoProce = exports['default'] = pipe;
+		: (
+			module.exports = exports.scpoProce = exports['default'] = pipe,
+			exports.__esModule = true
+		);
 
 	function apply(f, t, p) {
 		switch (p.length) {
