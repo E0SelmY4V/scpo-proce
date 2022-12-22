@@ -109,7 +109,7 @@ export namespace scpoProce {
 /**
  * 幻想私社异步过程类
  * @author E0SelmY4V
- * @version 1.1.2022122010
+ * @version 1.20221220.10
  * @link https://github.com/E0SelmY4V/scpo-proce
  */
 export function scpoProce<P extends any[], E extends any[] = [any]>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config): scpoProce.Proce<P, E>
