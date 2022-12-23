@@ -6,7 +6,7 @@ The full name of *scpoProce* is *Scpos Process*, which is a super high-level Pro
 With the `await/async`, the convenience it brings can be more violent and stimulating.
 
 The *Scpos Process* can not only run under Node.js, but also be used in HTML page development.
-The oldest browser it support is IE6.
+The oldest browser it support is IE5.
 
 ## Installation
 

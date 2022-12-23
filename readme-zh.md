@@ -6,7 +6,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
 本项目灵感来源于 ES6 的`Promise`，可用来减小异步编程带来的复杂性。
 还可配合`await/async`，方便程度更上一层楼。
 
-本项目既可用于 Node.js 的开发，也可用于前端 HTML 页面中的脚本，最高可兼容 IE6。
+本项目既可用于 Node.js 的开发，也可用于前端 HTML 页面中的脚本，最高可兼容 IE5。
 
 ## 安装
 
