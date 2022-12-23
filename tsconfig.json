@@ -1,0 +1,20 @@
+{
+	"files": [
+		"test/test1.ts",
+	],
+	"compilerOptions": {
+		"target": "ESNext",
+		// "esModuleInterop": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"strict": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"noImplicitAny": true,
+		"outDir": "test",
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+	},
+}

@@ -6,13 +6,10 @@
  */
 'use strict';
 (function () {
-	var isBrowser = typeof exports === 'undefined', voidArray = [];
-	(pipe.isBrowser = isBrowser)
+	var notModule = typeof exports === 'undefined', voidArray = [];
+	(pipe.notModule = notModule)
 		? window.scpoProce = pipe
-		: (
-			module.exports = exports.scpoProce = exports['default'] = pipe,
-			exports.__esModule = true
-		);
+		: (module.exports = pipe.scpoProce = pipe['default'] = pipe);
 
 	function apply(f, t, p) {
 		switch (p.length) {
@@ -157,7 +154,7 @@
 	function toss(_t, errObj) {
 		_t.lastErr = setTimeout(function () {
 			if (_t.lastDef !== null) return toss(_t, errObj);
-			else if (isBrowser && !window.console) throw errObj;
+			else if (notModule && !window.console) throw errObj;
 			else return console.error('scpo-proce Uncaught', errObj);
 		});
 	}

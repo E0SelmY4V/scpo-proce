@@ -3,7 +3,13 @@
   "version": "1.20221220.10",
   "description": "Make your async programming easier",
   "main": "main.js",
-  "scripts": {},
+  "scripts": {
+    "test-ie": "node test/test0.js",
+    "test-ts": "tsc & node test/test1.js",
+    "test-js": "node test/test2.js",
+    "test-oh": "start test/test3.html",
+    "test-wp": "webpack & start test/test4.html"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/E0SelmY4V/scpo-proce.git"

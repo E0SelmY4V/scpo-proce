@@ -10,7 +10,7 @@ export namespace scpoProce {
 	type CbNxt<P extends any[] = any[], P0 extends any[] = [], E extends any[] = [any], R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>, ...P0], R, any[]>
 	type STimer = number | null
 	type ListGot<L, T = any[]> = L extends ArrayLike<any> ? L[0] extends T ? L[0] : L : L
-	const isBrowser: boolean
+	const notModule: boolean
 	function apply<P extends any[], R>(f: (...param: P) => R, t: any, p: P): R
 	function isThenable(n: any): n is PromiseLike<any>
 	function isArrayLike(n: any): n is ArrayLike<any>
