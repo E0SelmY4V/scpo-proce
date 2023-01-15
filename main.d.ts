@@ -4,7 +4,7 @@ import {
 	ArrayLtdSplited,
 	Transposed,
 } from 'accurtype'
-export namespace scpoProce {
+declare namespace scpoProce {
 	type CbNor<P extends readonly any[] = any[], R = any, T extends readonly any[] = []> = (...arg: [...P, ...T]) => R
 	type CbCur<P extends readonly any[] = any[], E extends readonly any[] = [any], R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>], R, any[]>
 	type CbNxt<P extends readonly any[] = any[], P0 extends readonly any[] = [], E extends readonly any[] = [any], R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>, ...P0], R, any[]>
@@ -112,6 +112,6 @@ export namespace scpoProce {
  * @version 1.01220.20
  * @link https://github.com/E0SelmY4V/scpo-proce
  */
-export function scpoProce<P extends readonly any[], E extends readonly any[] = [any]>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config): scpoProce.Proce<P, E>
-export function scpoProce<A extends Accur<A>, P extends A[]>(...arg: P): scpoProce.Proce<P, []>
-export default scpoProce
+declare function scpoProce<P extends readonly any[], E extends readonly any[] = [any]>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config): scpoProce.Proce<P, E>
+declare function scpoProce<A extends Accur<A>, P extends A[]>(...arg: P): scpoProce.Proce<P, []>
+export = scpoProce
