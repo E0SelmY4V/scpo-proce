@@ -225,6 +225,9 @@
 			});
 			return typeof todo === 'function' || typeof ordo === 'function' ? proc.then(todo, ordo) : proc;
 		},
+		grab: function (doexpr, ordo, depth, config) {
+			return this.take(depth).next(doexpr, ordo, config);
+		},
 		getBefore: function (n) {
 			return this.before ? n ? n.index[this.id] ? n : (
 				n.push(this), n.index[this.id] = true, this.before.getBefore(n)

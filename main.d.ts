@@ -12,7 +12,7 @@ declare namespace scpoProce {
 	type ListGot<L, T = any[]> = L extends ArrayLike<any> ? L[0] extends T ? L[0] : L : L
 	type ListArrGot<L extends readonly any[]> = [L[0]] extends [readonly any[]] ? L[0] : L
 	const notModule: boolean
-	function apply<P extends any[], R>(f: (...param: P) => R, t: any, p: P): R
+	function apply<P extends any[], R>(f: (...param: [...P]) => R, t: any, p: P): R
 	function isThenable(n: any): n is PromiseLike<any>
 	function isArrayLike(n: any): n is ArrayLike<any>
 	function arrayFrom<T>(n: ArrayLike<T>): T[]
@@ -59,6 +59,7 @@ declare namespace scpoProce {
 		next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, any[]>, config?: Config): Proce<P1, E1>
 		take<D extends number = -1>(depth?: D): ProceTaked<P, E, D>
 		take<RT, RO = RT, D extends number = -1, T1 = ProceTaked<P, E, D>>(todo: t.tf<T1, RT, 0>, ordo?: t.tf<T1, RO, 1>, depth?: D): Proce<[RT | RO]>
+		grab<P1 extends readonly any[], E1 extends readonly any[], D extends number = -1, PT extends readonly any[] = ProceTaked<P, E, D> extends Proce<infer P, readonly any[]> ? P : P>(doexpr?: CbNxt<P1, PT, E1>, ordo?: CbNor<E1, any, any[]>, depth?: D, config?: Config): Proce<P1, E1>
 		conf<E1>(config?: Config, ordo?: CbNor<E, E1, any[]>): t.cp<P, E1>
 		configAll(n?: Config): Proce<P, E>
 		todo<A extends Accur<A>, P1 extends A[]>(...n: P1): Proce<P1, []>
