@@ -26,35 +26,37 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   git clone https://github.com/E0SelmY4V/scpo-proce.git
   ```
 
-## 使用
+## 引入
 
-- ### CommonJS
-
-  例如 Node.js 等的 CommonJS 通过这样引入
+- ### Common JS
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
-  // or
-  var scpoProce = require('scpo-proce')['default'];
+  const scpoProce = require('scpo-proce');
   ```
 
-- ### ES6
+- ### Typescript
 
-  如果使用的是 ES 模块，可以像这样
+  ```ts
+  import scpoProce = require('scpo-proce');
+  ```
+
+- ### ES Module
 
   ```javascript
   import scpoProce from 'scpo-proce';
   ```
 
-- ### 浏览器
-
-  如果是用在网页开发
+- ### HTML
 
   ```html
   <script src="scpo-proce/main.js"></script>
   ```
 
-  就可以通过`window.scpoProce`或者`scpoProce`来使用了。
+  ```js
+  /// <reference path="scpo-proce/global.d.ts" />
+
+  console.log(scpoProce);
+  ```
 
 ## 使用提示
 

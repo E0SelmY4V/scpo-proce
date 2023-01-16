@@ -28,7 +28,7 @@ The oldest browser it support is IE5.
 
 ## Import
 
-- ### CommonJS
+- ### Common JS
 
   ```javascript
   const scpoProce = require('scpo-proce');
