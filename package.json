@@ -5,10 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test-ie": "node test/test0.js",
-    "test-ts": "tsc & node test/test1.js",
-    "test-js": "node test/test2.js",
-    "test-oh": "start test/test3.html",
-    "test-wp": "webpack & start test/test4.html"
+    "test-oh": "start test/test3.html"
   },
   "repository": {
     "type": "git",
@@ -34,6 +31,7 @@
     "accurtype": "^2.4.166"
   },
   "devDependencies": {
-    "ie-passer": "^1.3.4"
+    "ie-passer": "^1.3.4",
+    "export-tester": "^1.0.0"
   }
 }
