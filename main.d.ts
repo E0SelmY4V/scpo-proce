@@ -111,6 +111,7 @@ declare namespace scpoProce {
 /**
  * 幻想私社异步过程类
  * @version 1.01220.20
+ * @license GPL-3.0-or-later
  * @link https://github.com/E0SelmY4V/scpo-proce
  */
 declare function scpoProce<P extends readonly any[], E extends readonly any[] = [any]>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config): scpoProce.Proce<P, E>

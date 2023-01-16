@@ -26,21 +26,21 @@ The oldest browser it support is IE5.
   git clone https://github.com/E0SelmY4V/scpo-proce.git
   ```
 
-## Usage
+## Import
 
 - ### CommonJS
 
-  The CommonJS module, like Node.js, "require" like this:
-
   ```javascript
-  const { scpoProce } = require('scpo-proce');
-  // or
-  var scpoProce = require('scpo-proce')["default"];
+  const scpoProce = require('scpo-proce');
   ```
 
-- ### ES6
+- ### Typescript
 
-  If you are using ES module, you can:
+  ```ts
+  import scpoProce = require('scpo-proce');
+  ```
+
+- ### ES Module
 
   ```javascript
   import scpoProce from 'scpo-proce';
@@ -48,13 +48,15 @@ The oldest browser it support is IE5.
 
 - ### HTML
 
-  For the HTML:
-
   ```html
   <script src="scpo-proce/main.js"></script>
   ```
 
-  And then, you can use it through `window.scpoProce` or `scpoProce`.
+  ```js
+  /// <reference path="scpo-proce/global.d.ts" />
+
+  console.log(scpoProce);
+  ```
 
 ## Tips
 

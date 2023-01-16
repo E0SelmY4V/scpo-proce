@@ -1,4 +1,4 @@
-const { scpoProce } = require('..');
+/// <reference path="../global.d.ts" />
 const https = require('https');
 const webReq = (url, callback) => https.get(url, res => {
 	const list = [];
