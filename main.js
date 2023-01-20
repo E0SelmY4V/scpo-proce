@@ -23,12 +23,12 @@
 	pipe.apply = apply;
 
 	function isThenable(n) {
-		return typeof n === 'object' && typeof n.then === 'function';
+		return typeof n === 'object' && n !== null && typeof n.then === 'function';
 	}
 	pipe.isThenable = isThenable;
 
 	function isArrayLike(n) {
-		return typeof n === 'object' && isFinite(n.length);
+		return typeof n === 'object' && n !== null && isFinite(n.length);
 	}
 	pipe.isArrayLike = isArrayLike;
 
@@ -76,7 +76,7 @@
 
 	function ConfigClass(n, proc) {
 		for (var i in n) this[i] = n[i];
-		if (typeof proc === 'object') this.proc = proc;
+		if (typeof proc === 'object' && n !== null) this.proc = proc;
 	}
 	ConfigClass.configAll = function (n) {
 		for (var i in n) ConfigClass.prototype[i] = n[i];
@@ -88,8 +88,8 @@
 			this.proc.uncaught = typeof this.ordo !== 'function';
 		},
 		get: function (n) {
-			if (typeof n !== 'object') return this;
-			for (var i in this) if (typeof n[i] === 'undefined') n[i] = this[i];
+			if (typeof n !== 'object' || n === null) return this;
+			for (var i in this) if (typeof n[i] === 'undefined' || n[i] === null) n[i] = this[i];
 			return n;
 		},
 		trap: 'all',
@@ -216,7 +216,7 @@
 			return cf.hidden = true, this.then(cf, ordo), proc.before = this, proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
-			typeof todo === 'number' ? (depth = todo) : typeof depth === 'undefined' && (depth = -1);
+			typeof todo === 'number' ? (depth = todo) : (typeof depth === 'undefined' || depth === null) && (depth = -1);
 			var _this = this, testf, proc = new Proce(function (todo, ordo) {
 				_this.then(testf = function (rtn) {
 					isThenable(rtn) && depth-- !== 0 ? rtn.then(testf, ordo) : apply(todo, null, arguments);
