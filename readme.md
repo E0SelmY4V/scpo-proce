@@ -148,7 +148,7 @@ The oldest browser it support is IE5.
   *Scpos Process*:
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   scpoProce((res, rej) => async0(param, res))
     .then(result => {
@@ -194,7 +194,7 @@ The oldest browser it support is IE5.
   It can looks like this if you use *Scpos Process*:
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   function main() {
     // do something...
@@ -227,7 +227,7 @@ The oldest browser it support is IE5.
   So many `next` may still not looking, so there is a simple method `scpoProce.snake()` which can also package these async operation into one async object to make the error catching easier.
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   function main() {
     scpoProce.snake((res, rej) => {
@@ -282,7 +282,7 @@ The oldest browser it support is IE5.
 
   ```javascript
   const fs = require('fs');
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   module.exports = async (list, callback) => {
     for (let i = 0; i < list.length; i++) {
@@ -298,7 +298,7 @@ The oldest browser it support is IE5.
 
   ```javascript
   const fs = require('fs');
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   module.exports = (list, callback) => scpoProce.snake(list.map(file => (res, rej) => scpoProce(res => fs.access(list[i], fs.constants.F_OK, res)).then(isNoFile => isNoFile ? res() : rej(file)))).then(() => false, e => e).then(callback);
   ```
@@ -323,7 +323,7 @@ The oldest browser it support is IE5.
 
   ```javascript
   const fs = require('fs');
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   function easyRead(file) {
     return scpoProce(res => fs.readFile(file, 'utf-8', res))
@@ -336,7 +336,7 @@ The oldest browser it support is IE5.
   For example, `scpoProce.all()`, which like `Promise.all()`:
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   scpoProce.all(
     scpoProce(res => res('a', 'c')),

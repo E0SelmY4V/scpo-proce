@@ -148,7 +148,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   也可以使用`scpoProce`达到同样的效果：
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   scpoProce((res, rej) => async0(param, res))
     .then(result => {
@@ -195,7 +195,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   使用本项目后：
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   function main() {
     // do something...
@@ -229,7 +229,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   此函数还可把这堆连续异步包装成一个异步过程，方便捕获错误：
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   function main() {
     scpoProce.snake((res, rej) => {
@@ -288,7 +288,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
 
   ```javascript
   const fs = require('fs');
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   module.exports = async (list, callback) => {
     for (let i = 0; i < list.length; i++) {
@@ -304,7 +304,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
 
   ```javascript
   const fs = require('fs');
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   module.exports = (list, callback) => scpoProce.snake(list.map(file => (res, rej) => scpoProce(res => fs.access(list[i], fs.constants.F_OK, res)).then(isNoFile => isNoFile ? res() : rej(file)))).then(() => false, e => e).then(callback);
   ```
@@ -325,7 +325,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
 
   ```javascript
   const fs = require('fs');
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   function easyRead(file) {
     return scpoProce(res => fs.readFile(file, 'utf-8', res))
@@ -336,7 +336,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   不仅是普通的`then`方法的回调可以获取多个参数，`scpoProce.snake()`、`scpoProce.all()`、`scpoProce.one()`等将多个异步包装成一个异步的方法也支持获取多个参数。例如类似`Promise.all()`的`scpoProce.all()`方法：
 
   ```javascript
-  const { scpoProce } = require('scpo-proce');
+  const scpoProce = require('scpo-proce');
 
   scpoProce.all(
     scpoProce(res => res('a', 'c')),
