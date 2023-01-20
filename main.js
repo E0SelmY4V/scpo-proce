@@ -43,7 +43,7 @@
 	}
 	pipe.getList = getList;
 
-	var m = false, z = 0, f = 1;
+	var m = false, z = -1, f = 1;
 	function getId() {
 		return (m = !m) ? z-- : f++;
 	}
