@@ -32,11 +32,6 @@
 	}
 	pipe.isArrayLike = isArrayLike;
 
-	function isProce(n) {
-		return n instanceof Proce;
-	}
-	pipe.isProce = isProce;
-
 	function arrayFrom(n) {
 		for (var arr = [], i = 0; i < n.length; i++) arr.push(n[i]);
 		return arr;
@@ -199,7 +194,7 @@
 		before: null,
 		uncaught: true,
 		then: function (todo, ordo) {
-			if (!isProce(this)) return new Proce(null, null, true).then(todo, ordo);
+			if (!this.id) return new Proce(null, null, true).then(todo, ordo);
 			if (this.config.trap !== 'none') this.getBefore()[
 				this.config.trap === 'all' ? 'trap' : 'supp'
 			](ordo);
@@ -209,7 +204,7 @@
 			return this.then(null, ordo);
 		},
 		next: function (doexpr, ordo, config) {
-			if (!isProce(this)) return new Proce(null, null, true).next(doexpr, ordo, config);
+			if (!this.id) return new Proce(null, null, true).next(doexpr, ordo, config);
 			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
 			var proc = new Proce(null, this.config.get(config)),
 				cf = function () { return act(proc, doexpr, arguments); };
@@ -238,7 +233,7 @@
 			return this;
 		},
 		conf: function (config, ordo) {
-			if (!isProce(this)) return new Proce(null, null, true).conf(config);
+			if (!this.id) return new Proce(null, null, true).conf(config);
 			var tcfg = this.config, cf = function (n) { return tcfg.set(config), n; }
 			cf.hidden = true;
 			return this.then(cf, ordo);
