@@ -71,6 +71,9 @@ declare namespace scpoProce {
 	function then<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>): Proce<[RT], E1>
 	function trap(ordo?: CbNor<[]>): Proce<[], []>
 	function next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, config?: Config): Proce<P1, E1>
+	function take(depth?: number): Proce<[], []>
+	function take<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>, depth?: number): Proce<[RT], E1>
+	function grab<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, depth?: number, config?: Config): Proce<P1, E1>
 	function conf<E1>(config?: Config, ordo?: CbNor<[], E1, any[]>): t.cp<[], E1>
 	function configAll(): Proce<[], []>
 	function todo<A extends Accur<A>, P1 extends A[]>(...n: P1): Proce<P1, []>

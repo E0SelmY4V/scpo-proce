@@ -1,4 +1,4 @@
-/// <reference path="../global.d.ts" />
+const scpoProce = require('scpo-proce');
 const https = require('https');
 const webReq = (url, callback) => https.get(url, res => {
 	const list = [];
@@ -8,7 +8,7 @@ const webReq = (url, callback) => https.get(url, res => {
 const { testWebsite } = require('./tool');
 const alert = console.log;
 const test = {
-	['错误捕获']() {
+	'错误捕获'() {
 		const a = scpoProce((res, rej) => setTimeout(res, 200))
 			.then(() => a(345))
 			.then(() => alert(234), () => alet(123))
@@ -17,24 +17,24 @@ const test = {
 			.then(() => a(432));
 		return a.trap(() => alert(543));
 	},
-	['多参数回调网络请求']() {
+	'多参数回调网络请求'() {
 		return scpoProce(todo => webReq(testWebsite + "?=" + Math.random(), todo))
 			.then((data, w) => alert(data + w));
 	},
-	['开门then']() {
+	'开门then'() {
 		return scpoProce()
 			.then(() => (alert("hh"), testWebsite + "?=" + Math.random()))
 			.next((todo, ordo, url) => webReq(url, todo))
 			.then((data, w) => alert(data + w));
 	},
-	['snake方法']() {
+	'snake方法'() {
 		return scpoProce.snake(
 			(todo) => todo(testWebsite + "?=", Math.random()),
 			(todo, ordo, url, randNum) => webReq(url + randNum, todo),
 			(todo, ordo, data) => alert(data),
 		);
 	},
-	['配置默认回调']() {
+	'配置默认回调'() {
 		// scpoProce.configAll({
 		// 	todo: function (d) { alert(d); },
 		// 	ordo: function () { alert('err!'); }
@@ -43,16 +43,24 @@ const test = {
 			.conf({ todo: () => alert(123) });
 		return scpoProce(res => setTimeout(res, 1500));
 	},
-	['all方法']() {
+	'all方法'() {
 		return scpoProce.all(
 			scpoProce((todo) => setTimeout(todo, 1000)).then(() => 123),
 			scpoProce((todo) => setTimeout(() => todo(234), 2000)),
 		).then((rslt) => alert(rslt));
 	},
+	'开门take'() {
+		alert(scpoProce.take(0));
+		alert(scpoProce.take());
+		alert(scpoProce.take(() => 123));
+	},
+	'开门grab'() {
+		return scpoProce.grab(todo => setTimeout(todo, 1000)).then(() => alert(123));
+	},
 };
 module.exports = async () => {
 	for (const i in test) {
-		console.group(i);
+		console.log('\033[43m ' + i + ' \033[0m');
 		await test[i]().then(() => (
 			console.groupEnd(i),
 			console.log('')

@@ -211,6 +211,7 @@
 			return cf.hidden = true, this.then(cf, ordo), proc.before = this, proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
+			if (!this.id) return new Proce(null, null, true).take(todo, ordo, depth);
 			typeof todo === 'number' ? (depth = todo) : (typeof depth === 'undefined' || depth === null) && (depth = -1);
 			var _this = this, testf, proc = new Proce(function (todo, ordo) {
 				_this.then(testf = function (rtn) {
@@ -292,6 +293,8 @@
 		'then',
 		'trap',
 		'next',
+		'take',
+		'grab',
 		'conf',
 		'configAll',
 		'todo',
