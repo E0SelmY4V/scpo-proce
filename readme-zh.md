@@ -148,7 +148,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   也可以使用`scpoProce`达到同样的效果：
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   scpoProce((res, rej) => async0(param, res))
     .then(result => {
@@ -195,7 +195,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   使用本项目后：
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   function main() {
     // do something...
@@ -229,7 +229,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   此函数还可把这堆连续异步包装成一个异步过程，方便捕获错误：
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   function main() {
     scpoProce.snake((res, rej) => {
@@ -267,9 +267,9 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   一般来说我们可能会编写如下代码：
 
   ```javascript
-  const fs = require('fs');
+  import * as fs from 'fs';
 
-  module.exports = (() => {
+  const Fn = (() => {
     let subCheck = (index, list, callback) =>
       (isntExist) => isntExist
         ? index === list.length - 1
@@ -287,10 +287,10 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   我们还可以用`async/await`来实现：
 
   ```javascript
-  const fs = require('fs');
-  const scpoProce = require('scpo-proce');
+  import * as fs from 'fs';
+  import scpoProce from 'scpo-proce';
 
-  module.exports = async (list, callback) => {
+  const Fn = async (list, callback) => {
     for (let i = 0; i < list.length; i++) {
       if (await scpoProce(res =>
         fs.access(list[i], fs.constants.F_OK, isNoFile => res(!isNoFile))
@@ -303,10 +303,19 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   或者用本项目一行语句解决：
 
   ```javascript
-  const fs = require('fs');
-  const scpoProce = require('scpo-proce');
+  import * as fs from 'fs';
+  import scpoProce from 'scpo-proce';
 
-  module.exports = (list, callback) => scpoProce.snake(list.map(file => (res, rej) => scpoProce(res => fs.access(list[i], fs.constants.F_OK, res)).then(isNoFile => isNoFile ? res() : rej(file)))).then(() => false, e => e).then(callback);
+  const Fn = (list, callback) =>
+    scpoProce.snake(
+      list.map(file =>
+        (res, rej) => scpoProce(res =>
+          fs.access(list[i], fs.constants.F_OK, res)
+        ).then(isNoFile => isNoFile ? res() : rej(file))
+      )
+    )
+    .then(() => false, e => e)
+    .then(callback);
   ```
 
 - ### 多参数回调
@@ -314,7 +323,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   本项目支持使用`async/await`。例如如果我们想把`fs.readFile()`包装为可以使用`await`的函数，我们一般会编写如下代码：
 
   ```javascript
-  const fs = require('fs');
+  import * as fs from 'fs';
 
   function easyRead(file) {
     return new Promise(res => fs.readFile(file, 'utf-8', (err, data) => res(err ? null : data)));
@@ -324,8 +333,8 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   由于`Promise`的回调函数无法接受一个以上的参数，我们只能通过在回调里插入回调，这个样子并不是特别优雅。使用本项目可以避免这一问题：
 
   ```javascript
-  const fs = require('fs');
-  const scpoProce = require('scpo-proce');
+  import * as fs from 'fs';
+  import scpoProce from 'scpo-proce';
 
   function easyRead(file) {
     return scpoProce(res => fs.readFile(file, 'utf-8', res))
@@ -336,7 +345,7 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
   不仅是普通的`then`方法的回调可以获取多个参数，`scpoProce.snake()`、`scpoProce.all()`、`scpoProce.one()`等将多个异步包装成一个异步的方法也支持获取多个参数。例如类似`Promise.all()`的`scpoProce.all()`方法：
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   scpoProce.all(
     scpoProce(res => res('a', 'c')),

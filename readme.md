@@ -148,7 +148,7 @@ The oldest browser it support is IE5.
   *Scpos Process*:
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   scpoProce((res, rej) => async0(param, res))
     .then(result => {
@@ -194,7 +194,7 @@ The oldest browser it support is IE5.
   It can looks like this if you use *Scpos Process*:
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   function main() {
     // do something...
@@ -227,7 +227,7 @@ The oldest browser it support is IE5.
   So many `next` may still not looking, so there is a simple method `scpoProce.snake()` which can also package these async operation into one async object to make the error catching easier.
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   function main() {
     scpoProce.snake((res, rej) => {
@@ -265,9 +265,9 @@ The oldest browser it support is IE5.
   You may coding like this recursion:
 
   ```javascript
-  const fs = require('fs');
+  import * as fs from 'fs';
 
-  module.exports = (() => {
+  const Fn = (() => {
     let subCheck = (index, list, callback) =>
       (isntExist) => isntExist
         ? index === list.length - 1
@@ -281,10 +281,10 @@ The oldest browser it support is IE5.
   Or you can use `async/await`:
 
   ```javascript
-  const fs = require('fs');
-  const scpoProce = require('scpo-proce');
+  import * as fs from 'fs';
+  import scpoProce from 'scpo-proce';
 
-  module.exports = async (list, callback) => {
+  const Fn = async (list, callback) => {
     for (let i = 0; i < list.length; i++) {
       if (await scpoProce(res =>
         fs.access(list[i], fs.constants.F_OK, isNoFile => res(!isNoFile))
@@ -297,10 +297,19 @@ The oldest browser it support is IE5.
   Or using *Scpos Process* to resolve elegantly with one sentence:
 
   ```javascript
-  const fs = require('fs');
-  const scpoProce = require('scpo-proce');
+  import * as fs from 'fs';
+  import scpoProce from 'scpo-proce';
 
-  module.exports = (list, callback) => scpoProce.snake(list.map(file => (res, rej) => scpoProce(res => fs.access(list[i], fs.constants.F_OK, res)).then(isNoFile => isNoFile ? res() : rej(file)))).then(() => false, e => e).then(callback);
+  const Fn = (list, callback) =>
+    scpoProce.snake(
+      list.map(file =>
+        (res, rej) => scpoProce(res =>
+          fs.access(list[i], fs.constants.F_OK, res)
+        ).then(isNoFile => isNoFile ? res() : rej(file))
+      )
+    )
+    .then(() => false, e => e)
+    .then(callback);
   ```
 
 - ### Multiple-results Async
@@ -308,7 +317,7 @@ The oldest browser it support is IE5.
   To package `fs.readFile()` into a function that can called with `await`, usually, you may coding like this:
 
   ```javascript
-  const fs = require('fs');
+  import * as fs from 'fs';
 
   function easyRead(file) {
     return new Promise(res => fs.readFile(file, 'utf-8', (err, data) => res(err ? null : data)));
@@ -322,8 +331,8 @@ The oldest browser it support is IE5.
   You can avoid this problem by using *Scpos Process*:
 
   ```javascript
-  const fs = require('fs');
-  const scpoProce = require('scpo-proce');
+  import * as fs from 'fs';
+  import scpoProce from 'scpo-proce';
 
   function easyRead(file) {
     return scpoProce(res => fs.readFile(file, 'utf-8', res))
@@ -336,7 +345,7 @@ The oldest browser it support is IE5.
   For example, `scpoProce.all()`, which like `Promise.all()`:
 
   ```javascript
-  const scpoProce = require('scpo-proce');
+  import scpoProce from 'scpo-proce';
 
   scpoProce.all(
     scpoProce(res => res('a', 'c')),
