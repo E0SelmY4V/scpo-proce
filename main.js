@@ -66,7 +66,7 @@
 			for (var i in n) this[i] = n[i];
 			return this;
 		},
-		trap: 'all',
+		actTrap: true,
 		errlv: 'log',
 		todo: null,
 		ordo: null,
@@ -88,7 +88,7 @@
 		if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
 		try {
 			var r = apply(doexpr, params);
-			_t.config.trap !== 'none' && isThenable(r) && r.then(null, params[1]);
+			isThenable(r) && _t.config.actTrap && r.then(null, params[1]);
 			_t.acted = true;
 			return r;
 		} catch (errObj) { _t.acted = true; return params[1](errObj); }
