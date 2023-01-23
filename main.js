@@ -88,10 +88,9 @@
 		if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
 		try {
 			var r = apply(doexpr, params);
-			isThenable(r) && _t.config.actTrap && r.then(null, params[1]);
+			isThenable(r) && _t.config.actTrap && r.then(null, _t.fordo);
 			_t.acted = true;
-			return r;
-		} catch (errObj) { _t.acted = true; return params[1](errObj); }
+		} catch (errObj) { _t.acted = true; return _t.fordo(errObj); }
 	}
 	pipe.act = act;
 
@@ -186,7 +185,7 @@
 		},
 		next: function (doexpr, ordo, config) {
 			var proc = new Proce(null, this.config.get(config));
-			this.then(function () { return act(proc, doexpr, arguments); }, proc.fordo);
+			this.then(function () { act(proc, doexpr, arguments); }, proc.fordo);
 			return proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
