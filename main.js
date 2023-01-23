@@ -6,10 +6,11 @@
  */
 'use strict';
 (function () {
-	var notModule = typeof module === 'undefined', voidArray = [];
+	var notModule = typeof module === 'undefined';
+	var voidArray = [];
 	(pipe.notModule = notModule)
 		? window.scpoProce = pipe
-		: (module.exports = pipe);
+		: module.exports = pipe;
 
 	function apply(f, t, p) {
 		switch (p.length) {
@@ -33,7 +34,8 @@
 	pipe.isArrayLike = isArrayLike;
 
 	function arrayFrom(n) {
-		for (var arr = [], i = 0; i < n.length; i++) arr.push(n[i]);
+		var arr = [];
+		for (var i = 0; i < n.length; i++) arr.push(n[i]);
 		return arr;
 	}
 	pipe.arrayFrom = arrayFrom;
@@ -43,7 +45,9 @@
 	}
 	pipe.getList = getList;
 
-	var m = false, z = -1, f = 1;
+	var m = false;
+	var z = -1;
+	var f = 1;
 	function getId() {
 		return (m = !m) ? z-- : f++;
 	}
@@ -109,37 +113,46 @@
 		if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
 		try {
 			var r = apply(doexpr, _t, params);
-			return _t.config.trap !== 'none' && isThenable(r) && (typeof r.getBefore === 'function'
+			_t.config.trap !== 'none' && isThenable(r) && (typeof r.getBefore === 'function'
 				? r.getBefore(new ProceArray())[
 					_t.config.trap === 'all' ? 'trap' : 'supp'
 				](params[1])
 				: r.then(null, params[1])
-			), _t.acted = true, r;
+			);
+			_t.acted = true;
+			return r;
 		} catch (errObj) { _t.acted = true; return params[1](errObj); }
 	}
 	pipe.act = act;
 
 	function clear(_t, param) {
-		var i = _t.pointer, q = _t.queuetodo, f = true;
+		var i = _t.pointer;
+		var q = _t.queuetodo;
+		var f = true;
 		while (++i < q.length) if (typeof q[i] === 'function') {
 			q[i].hidden || (f = false);
 			try { param = doRtn(_t, q[i], param); }
-			catch (errObj) { _t.pointer = i, param = exeordo(_t, errObj), i = _t.pointer; }
+			catch (errObj) { _t.pointer = i; param = exeordo(_t, errObj); i = _t.pointer; }
 		}
 		f && (_t.lastDef = setTimeout(function () {
 			_t.then(_t.config.todo, _t.config.ordo);
-		})), _t.lastRtn = param, _t.cleared = true;
+		}));
+		_t.lastRtn = param;
+		_t.cleared = true;
 	}
 	pipe.clear = clear;
 
 	function exeordo(_t, param) {
-		var i = _t.pointer, q = _t.queueordo;
+		var i = _t.pointer;
+		var q = _t.queueordo;
 		while (++i < q.length) if (typeof q[i] === 'function') {
 			_t.pointer = i;
 			try { return doRtn(_t, q[i], param); }
 			catch (errObj) { return exeordo(_t, errObj); }
 		}
-		return _t.pointer = i, toss(_t, _t.nmArg ? param : param[0]), param;
+		_t.pointer = i;
+		toss(_t, _t.nmArg ? param : param[0]);
+		return param;
 	}
 	pipe.exeordo = exeordo;
 
@@ -153,7 +166,8 @@
 	pipe.toss = toss;
 
 	function tpus(_t, todo, ordo) {
-		var orf = typeof ordo === 'function', tof = typeof todo === 'function';
+		var orf = typeof ordo === 'function';
+		var tof = typeof todo === 'function';
 		if (_t.uncaught) _t.uncaught = !orf;
 		if (_t.cleared) {
 			_t.pointer++;
@@ -167,14 +181,18 @@
 					clearTimeout(_t.lastErr), _t.lastErr = null,
 					_t.lastRtn = doRtn(_t, ordo, _t.lastRtn)
 				);
-			} catch (errObj) { _t.lastRtn = errObj, toss(_t, errObj); }
+			} catch (errObj) { _t.lastRtn = errObj; toss(_t, errObj); }
 		} else _t.queueordo.push(ordo), _t.queuetodo.push(todo);
 	}
 	pipe.tpus = tpus;
 
 	function Proce(doexpr, config, cleared) {
-		this.queuetodo = [], this.queueordo = [], this.config = new ConfigClass(config, this), this.id = getId();
-		var noClear = true, _t = this;
+		this.queuetodo = [];
+		this.queueordo = [];
+		this.config = new ConfigClass(config, this);
+		this.id = getId();
+		var noClear = true;
+		var _t = this;
 		cleared ? this.cleared = true : (
 			this.ftodo = function () { if (noClear) noClear = false, clear(_t, arguments); },
 			this.fordo = function () { if (noClear) noClear = false, clear(_t, exeordo(_t, arguments)); },
@@ -202,7 +220,8 @@
 			if (this.config.trap !== 'none') this.getBefore()[
 				this.config.trap === 'all' ? 'trap' : 'supp'
 			](ordo);
-			return tpus(this, todo, ordo), this;
+			tpus(this, todo, ordo);
+			return this;
 		},
 		trap: function (ordo) {
 			return this.then(null, ordo);
@@ -210,18 +229,19 @@
 		next: function (doexpr, ordo, config) {
 			if (!this.id) return new Proce(null, null, true).next(doexpr, ordo, config);
 			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
-			var proc = new Proce(null, this.config.get(config)),
-				cf = function () { return act(proc, doexpr, arguments); };
-			return cf.hidden = true, this.then(cf, proc.fordo), proc.before = this, proc.trap(ordo);
+			var proc = new Proce(null, this.config.get(config));
+			var cf = function () { return act(proc, doexpr, arguments); };
+			cf.hidden = true;
+			this.then(cf, proc.fordo);
+			proc.before = this;
+			return proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
 			if (!this.id) return new Proce(null, null, true).take(todo, ordo, depth);
 			typeof todo === 'number' ? (depth = todo) : (typeof depth === 'undefined' || depth === null) && (depth = -1);
-			var _this = this, testf, proc = new Proce(function (todo, ordo) {
-				_this.then(testf = function (rtn) {
-					isThenable(rtn) && depth-- !== 0 ? rtn.then(testf, ordo) : apply(todo, null, arguments);
-				}, ordo);
-			});
+			var _this = this;
+			var testf = function (rtn) { isThenable(rtn) && depth-- !== 0 ? rtn.then(testf, ordo) : apply(todo, null, arguments); };
+			var proc = new Proce(function (todo, ordo) { _this.then(testf, ordo); });
 			return typeof todo === 'function' || typeof ordo === 'function' ? proc.then(todo, ordo) : proc;
 		},
 		grab: function (doexpr, ordo, depth, config) {
@@ -239,27 +259,36 @@
 		},
 		conf: function (config, ordo) {
 			if (!this.id) return new Proce(null, null, true).conf(config);
-			var tcfg = this.config, cf = function (n) { return tcfg.set(config), n; }
+			var tcfg = this.config;
+			var cf = function (n) { tcfg.set(config); return n; }
 			cf.hidden = true;
 			return this.then(cf, ordo);
 		},
 		configAll: function (config) {
-			return ConfigClass.configAll(config), this;
+			ConfigClass.configAll(config);
+			return this;
 		},
 		todo: function () {
 			var proc = new Proce(null, null, true);
-			return proc.lastRtn = arguments, proc;
+			proc.lastRtn = arguments;
+			return proc;
 		},
 		ordo: function () {
 			var proc = new Proce(null, null, true);
-			return proc.lastRtn = arguments, toss(proc, arguments[0]), proc;
+			proc.lastRtn = arguments;
+			toss(proc, arguments[0]);
+			return proc;
 		},
 		all: function () {
-			var l = getList(arguments), r = [[]], i = l.length, c = i;
+			var l = getList(arguments);
+			var r = [[]];
+			var i = l.length;
+			var c = i;
 			return new Proce(function (todo, ordo) {
 				while (--i >= 0) isThenable(l[i]) ? (function (i) {
 					l[i].then(function () {
-						var a = arguments, j = a.length;
+						var a = arguments;
+						var j = a.length;
 						while (--j >= 0) (r[j] || (r[j] = []))[i] = a[j];
 						if (--c === 0) apply(todo, null, r);
 					}, ordo);
@@ -268,7 +297,8 @@
 			});
 		},
 		one: function () {
-			var l = getList(arguments), noClear = true;
+			var l = getList(arguments);
+			var noClear = true;
 			return new Proce(function (todo, ordo) {
 				for (var i = 0; i < l.length; i++)
 					if (isThenable(l[i])) l[i].then(todo, ordo);
@@ -277,7 +307,8 @@
 			});
 		},
 		snake: function () {
-			var l = getList(arguments), _this = this;
+			var l = getList(arguments);
+			var _this = this;
 			return new Proce(function (todo, ordo) {
 				for (var i = 0; i < l.length; i++) _this = _this.next(l[i], ordo);
 				_this.then(todo, ordo);
