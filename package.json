@@ -16,7 +16,8 @@
     "promise",
     "callback",
     "ie",
-    "ie5",
+    "es3",
+    "es5",
     "utility",
     "utilities",
     "util"
