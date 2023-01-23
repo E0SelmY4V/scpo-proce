@@ -105,10 +105,7 @@
 	pipe.doRtn;
 
 	function act(_t, doexpr, args) {
-		var params = [
-			function () { if (noClear) noClear = false, clear(_t, arguments); },
-			function () { if (noClear) noClear = false, clear(_t, exeordo(_t, arguments)); }
-		], noClear = true;
+		var params = [_t.ftodo, _t.fordo];
 		if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
 		try {
 			var r = apply(doexpr, _t, params);
@@ -177,10 +174,17 @@
 
 	function Proce(doexpr, config, cleared) {
 		this.queuetodo = [], this.queueordo = [], this.config = new ConfigClass(config, this), this.id = getId();
-		cleared ? this.cleared = true : typeof doexpr === 'function' && act(this, doexpr);
+		var noClear = true, _t = this;
+		cleared ? this.cleared = true : (
+			this.ftodo = function () { if (noClear) noClear = false, clear(_t, arguments); },
+			this.fordo = function () { if (noClear) noClear = false, clear(_t, exeordo(_t, arguments)); },
+			typeof doexpr === 'function' && act(this, doexpr)
+		);
 	}
 	Proce.prototype = {
 		id: NaN,
+		ftodo: null,
+		fordo: null,
 		queuetodo: null,
 		queueordo: null,
 		cleared: false,
@@ -208,7 +212,7 @@
 			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
 			var proc = new Proce(null, this.config.get(config)),
 				cf = function () { return act(proc, doexpr, arguments); };
-			return cf.hidden = true, this.then(cf, ordo), proc.before = this, proc.trap(ordo);
+			return cf.hidden = true, this.then(cf, proc.fordo), proc.before = this, proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
 			if (!this.id) return new Proce(null, null, true).take(todo, ordo, depth);
