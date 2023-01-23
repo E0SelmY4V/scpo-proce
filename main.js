@@ -165,7 +165,6 @@
 		this.queuetodo = [];
 		this.queueordo = [];
 		this.config = new ConfigClass(config, this);
-		this.id = getId();
 		var noClear = true;
 		var _t = this;
 		cleared ? this.cleared = true : (
@@ -175,7 +174,6 @@
 		);
 	}
 	Proce.prototype = {
-		id: NaN,
 		ftodo: null,
 		fordo: null,
 		queuetodo: null,
@@ -190,7 +188,7 @@
 		pointer: -1,
 		uncaught: true,
 		then: function (todo, ordo) {
-			if (!this.id) return new Proce(null, null, true).then(todo, ordo);
+			if (this.isPipe) return new Proce(null, null, true).then(todo, ordo);
 			tpus(this, todo, ordo);
 			return this;
 		},
@@ -198,7 +196,7 @@
 			return this.then(null, ordo);
 		},
 		next: function (doexpr, ordo, config) {
-			if (!this.id) return new Proce(null, null, true).next(doexpr, ordo, config);
+			if (this.isPipe) return new Proce(null, null, true).next(doexpr, ordo, config);
 			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
 			var proc = new Proce(null, this.config.get(config));
 			var cf = function () { return act(proc, doexpr, arguments); };
@@ -207,7 +205,7 @@
 			return proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
-			if (!this.id) return new Proce(null, null, true).take(todo, ordo, depth);
+			if (this.isPipe) return new Proce(null, null, true).take(todo, ordo, depth);
 			typeof todo === 'number' ? (depth = todo) : (typeof depth === 'undefined' || depth === null) && (depth = -1);
 			var _this = this;
 			var testf;
@@ -222,7 +220,7 @@
 			return this.take(depth).next(doexpr, ordo, config);
 		},
 		conf: function (config, ordo) {
-			if (!this.id) return new Proce(null, null, true).conf(config);
+			if (this.isPipe) return new Proce(null, null, true).conf(config);
 			var tcfg = this.config;
 			var cf = function (n) { tcfg.set(config); return n; }
 			cf.hidden = true;
@@ -287,6 +285,7 @@
 			? new Proce(doexpr, config)
 			: apply(voidP, null, arguments);
 	}
+	pipe.isPipe = true;
 	var proto = Proce.prototype;
 	var pilist = [
 		'then',
