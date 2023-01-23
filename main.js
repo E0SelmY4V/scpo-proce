@@ -6,7 +6,7 @@
  */
 'use strict';
 (function () {
-	var notModule = typeof exports === 'undefined', voidArray = [];
+	var notModule = typeof module === 'undefined', voidArray = [];
 	(pipe.notModule = notModule)
 		? window.scpoProce = pipe
 		: (module.exports = pipe);
