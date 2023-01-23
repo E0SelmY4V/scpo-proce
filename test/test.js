@@ -35,19 +35,18 @@ const test = {
 		);
 	},
 	'配置默认回调'() {
-		// scpoProce.configAll({
-		// 	todo: function (d) { alert(d); },
-		// 	ordo: function () { alert('err!'); }
-		// });
+		scpoProce.configAll({
+			todo: function (d) { alert(d); },
+			ordo: function () { alert('err!'); }
+		});
 		scpoProce((res, rej) => setTimeout(res, 1000))
-			.conf({ todo: () => alert(123) });
 		return scpoProce(res => setTimeout(res, 1500));
 	},
 	'all方法'() {
 		return scpoProce.all(
 			scpoProce((todo) => setTimeout(todo, 1000)).then(() => 123),
-			scpoProce((todo) => setTimeout(() => todo(234), 2000)),
-		).then((rslt) => alert(rslt));
+			scpoProce((todo) => setTimeout(() => todo(234, 345), 2000)),
+		).then((r0, r1) => alert(r0 + ' ' + r1));
 	},
 	'开门take'() {
 		alert(scpoProce.take(0));
@@ -57,6 +56,11 @@ const test = {
 	'开门grab'() {
 		return scpoProce.grab(todo => setTimeout(todo, 1000)).then(() => alert(123));
 	},
+	'配置传递'() {
+		scpoProce.conf({
+			todo: () => alert(123)
+		}).next(todo => setTimeout(todo, 500));
+	}
 };
 module.exports = async () => {
 	for (const i in test) {

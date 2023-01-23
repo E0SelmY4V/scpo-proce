@@ -55,21 +55,25 @@
 
 	function ConfigClass(n) {
 		if (n && n._isProceConfig) return n;
-		for (var i in n) this[i] = n[i];
+		this._seted = [];
+		for (var i in n) this._seted.push(i), this[i] = n[i];
 	}
 	ConfigClass.configAll = function (n) {
 		for (var i in n) ConfigClass.prototype[i] = n[i];
 	};
 	ConfigClass.prototype = {
 		get: function (n) {
-			if (n && n._isProceConfig) return n;
-			for (var i in n) this[i] = n[i];
-			return this;
+			var r = new ConfigClass(n);
+			var seted = this._seted;
+			if (!n) for (var i = seted.length - 1; i >= 0; --i) r[seted[i]] = this[seted[i]], r._seted.push(seted[i]);
+			else for (var i = seted.length - 1; i >= 0; --i) seted[i] in n || (r[seted[i]] = this[seted[i]], r._seted.push(seted[i]));
+			return r;
 		},
 		actTrap: true,
 		errlv: 'log',
 		todo: null,
 		ordo: null,
+		_seted: null,
 		_isProceConfig: true
 	};
 	pipe.ConfigClass = ConfigClass;
@@ -184,8 +188,12 @@
 			return this.then(null, ordo);
 		},
 		next: function (doexpr, ordo, config) {
-			var proc = new Proce(null, this.config.get(config));
-			this.then(function () { act(proc, doexpr, arguments); }, proc.fordo);
+			var _this = this;
+			var proc = new Proce();
+			this.then(function () {
+				proc.config = _this.config.get(config);
+				act(proc, doexpr, arguments);
+			}, proc.fordo);
 			return typeof ordo === 'function' ? proc.trap(ordo) : proc;
 		},
 		take: function (todo, ordo, depth) {
@@ -206,7 +214,9 @@
 			return this.take(depth).next(doexpr, ordo, config);
 		},
 		conf: function (config) {
-			return this.then(function () { this.config = this.config.get(config); });
+			if (this.isPipe) return new Proce(null, null, true).conf(config);
+			var _this = this;
+			return this.then(function () { _this.config = _this.config.get(config); });
 		},
 		configAll: function (config) {
 			return this.then(function () { ConfigClass.configAll(config); });
