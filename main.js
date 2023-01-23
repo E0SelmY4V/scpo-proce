@@ -105,11 +105,9 @@
 		var q = _t.queuetodo;
 		var f = true;
 		while (++i < q.length)
-			if (typeof q[i] === 'function') {
-				q[i].hidden || (f = false);
+			if (typeof q[i] === 'function')
 				try { param = doRtn(_t, q[i], param); }
 				catch (errObj) { _t.pointer = i; param = exeordo(_t, errObj); i = _t.pointer; }
-			}
 		f && (_t.lastDef = setTimeout(function () {
 			_t.then(_t.config.todo, _t.config.ordo);
 		}));
@@ -154,17 +152,16 @@
 		if (_t.uncaught) _t.uncaught = !orf;
 		if (_t.cleared) {
 			_t.pointer++;
-			var hid = todo && todo.hidden;
-			hid || (clearTimeout(_t.lastDef), _t.lastDef = null);
+			clearTimeout(_t.lastDef);
+			_t.lastDef = null;
 			try {
 				_t.lastErr === null ? tof && (
 					_t.lastRtn = doRtn(_t, todo, _t.lastRtn)
 				) : orf && (
-					hid && (clearTimeout(_t.lastDef), _t.lastDef = null),
 					clearTimeout(_t.lastErr), _t.lastErr = null,
 					_t.lastRtn = doRtn(_t, ordo, _t.lastRtn)
 				);
-			} catch (errObj) { _t.lastRtn = errObj; toss(_t, errObj); }
+			} catch (errObj) { toss(_t, _t.lastRtn = errObj); }
 		} else _t.queueordo.push(ordo), _t.queuetodo.push(todo);
 	}
 	pipe.tpus = tpus;
@@ -207,9 +204,7 @@
 			if (this.isPipe) return new Proce(null, null, true).next(doexpr, ordo, config);
 			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
 			var proc = new Proce(null, this.config.get(config));
-			var cf = function () { return act(proc, doexpr, arguments); };
-			cf.hidden = true;
-			this.then(cf, proc.fordo);
+			this.then(function () { return act(proc, doexpr, arguments); }, proc.fordo);
 			return proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
@@ -232,9 +227,7 @@
 		conf: function (config, ordo) {
 			if (this.isPipe) return new Proce(null, null, true).conf(config);
 			var tcfg = this.config;
-			var cf = function (n) { tcfg.set(config); return n; }
-			cf.hidden = true;
-			return this.then(cf, ordo);
+			return this.then(function (n) { tcfg.set(config); return n; }, ordo);
 		},
 		configAll: function (config) {
 			ConfigClass.configAll(config);
