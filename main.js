@@ -186,7 +186,7 @@
 		next: function (doexpr, ordo, config) {
 			var proc = new Proce(null, this.config.get(config));
 			this.then(function () { act(proc, doexpr, arguments); }, proc.fordo);
-			return proc.trap(ordo);
+			return typeof ordo === 'function' ? proc.trap(ordo) : proc;
 		},
 		take: function (todo, ordo, depth) {
 			if (this.isPipe) return new Proce(null, null, true).take(todo, ordo, depth);
@@ -241,7 +241,6 @@
 		},
 		one: function () {
 			var l = getList(arguments);
-			var noClear = true;
 			return new Proce(function (todo, ordo) {
 				for (var i = 0; i < l.length; i++)
 					if (isThenable(l[i])) l[i].then(todo, ordo);
@@ -253,7 +252,7 @@
 			var l = getList(arguments);
 			var _this = this;
 			return new Proce(function (todo, ordo) {
-				for (var i = 0; i < l.length; i++) _this = _this.next(l[i], ordo);
+				for (var i = 0; i < l.length; i++) _this = _this.next(l[i]);
 				_this.then(todo, ordo);
 			});
 		}
