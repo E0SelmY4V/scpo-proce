@@ -53,26 +53,6 @@
 	}
 	pipe.getId = getId;
 
-	function ProceArray() {
-		this.index = {};
-	}
-	var proto = {
-		then: function (todo, ordo) {
-			for (var i = this.length - 1; i >= 0; i--) tpus(this[i], todo, ordo);
-		},
-		trap: function (ordo) {
-			return this.then(null, ordo);
-		},
-		supp: function (ordo) {
-			for (var i = this.length - 1; i >= 0; i--) if (this[i].uncaught) tpus(this[i], null, ordo);
-		},
-		pointer: 0,
-		index: null
-	};
-	ProceArray.prototype = [];
-	for (var i in proto) ProceArray.prototype[i] = proto[i];
-	pipe.ProceArray = ProceArray;
-
 	function ConfigClass(n, proc) {
 		for (var i in n) this[i] = n[i];
 		if (typeof proc === 'object' && n !== null) this.proc = proc;
@@ -113,12 +93,7 @@
 		if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
 		try {
 			var r = apply(doexpr, _t, params);
-			_t.config.trap !== 'none' && isThenable(r) && (typeof r.getBefore === 'function'
-				? r.getBefore(new ProceArray())[
-					_t.config.trap === 'all' ? 'trap' : 'supp'
-				](params[1])
-				: r.then(null, params[1])
-			);
+			_t.config.trap !== 'none' && isThenable(r) && r.then(null, params[1]);
 			_t.acted = true;
 			return r;
 		} catch (errObj) { _t.acted = true; return params[1](errObj); }
@@ -213,13 +188,9 @@
 		lastDef: null,
 		config: null,
 		pointer: -1,
-		before: null,
 		uncaught: true,
 		then: function (todo, ordo) {
 			if (!this.id) return new Proce(null, null, true).then(todo, ordo);
-			if (this.config.trap !== 'none') this.getBefore()[
-				this.config.trap === 'all' ? 'trap' : 'supp'
-			](ordo);
 			tpus(this, todo, ordo);
 			return this;
 		},
@@ -233,29 +204,22 @@
 			var cf = function () { return act(proc, doexpr, arguments); };
 			cf.hidden = true;
 			this.then(cf, proc.fordo);
-			proc.before = this;
 			return proc.trap(ordo);
 		},
 		take: function (todo, ordo, depth) {
 			if (!this.id) return new Proce(null, null, true).take(todo, ordo, depth);
 			typeof todo === 'number' ? (depth = todo) : (typeof depth === 'undefined' || depth === null) && (depth = -1);
 			var _this = this;
-			var testf = function (rtn) { isThenable(rtn) && depth-- !== 0 ? rtn.then(testf, ordo) : apply(todo, null, arguments); };
-			var proc = new Proce(function (todo, ordo) { _this.then(testf, ordo); });
+			var testf;
+			var proc = new Proce(function (todo, ordo) {
+				_this.then(testf = function (rtn) {
+					isThenable(rtn) && depth-- !== 0 ? rtn.then(testf, ordo) : apply(todo, null, arguments);
+				}, ordo);
+			});
 			return typeof todo === 'function' || typeof ordo === 'function' ? proc.then(todo, ordo) : proc;
 		},
 		grab: function (doexpr, ordo, depth, config) {
 			return this.take(depth).next(doexpr, ordo, config);
-		},
-		getBefore: function (n) {
-			return this.before ? n ? n.index[this.id] ? n : (
-				n.push(this), n.index[this.id] = true, this.before.getBefore(n)
-			) : this.before.getBefore(new ProceArray()) : n || new ProceArray();
-		},
-		setBefore: function (n) {
-			if (n && (n.pointer || (n.pointer = 0)) !== n.length) (this.before = n[n.pointer++]).setBefore(n);
-			else delete this.before;
-			return this;
 		},
 		conf: function (config, ordo) {
 			if (!this.id) return new Proce(null, null, true).conf(config);
