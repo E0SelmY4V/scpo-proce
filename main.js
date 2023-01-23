@@ -53,27 +53,24 @@
 	}
 	pipe.getId = getId;
 
-	function ConfigClass(n, proc) {
+	function ConfigClass(n) {
+		if (n && n._isProceConfig) return n;
 		for (var i in n) this[i] = n[i];
-		typeof proc === 'object' && n !== null && (this.proc = proc);
 	}
 	ConfigClass.configAll = function (n) {
 		for (var i in n) ConfigClass.prototype[i] = n[i];
 	};
 	ConfigClass.prototype = {
-		set: function (n) {
-			for (var i in n) this[i] = n[i];
-		},
 		get: function (n) {
-			if (typeof n !== 'object' || n === null) return this;
-			for (var i in this) if (typeof n[i] === 'undefined' || n[i] === null) n[i] = this[i];
-			return n;
+			if (n && n._isProceConfig) return n;
+			for (var i in n) this[i] = n[i];
+			return this;
 		},
 		trap: 'all',
 		errlv: 'log',
-		proc: null,
 		todo: null,
-		ordo: null
+		ordo: null,
+		_isProceConfig: true
 	};
 	pipe.ConfigClass = ConfigClass;
 	pipe.config = new ConfigClass();
@@ -106,9 +103,7 @@
 			if (typeof q[i] === 'function')
 				try { param = doRtn(_t, q[i], param); }
 				catch (errObj) { _t.pointer = i; param = exeordo(_t, errObj); i = _t.pointer; }
-		f && (_t.lastDef = setTimeout(function () {
-			_t.then(_t.config.todo, _t.config.ordo);
-		}));
+		f && (_t.lastDef = setTimeout(function () { _t.then(_t.config.todo, _t.config.ordo); }));
 		_t.lastRtn = param;
 		_t.cleared = true;
 	}
@@ -164,7 +159,7 @@
 	function Proce(doexpr, config, cleared) {
 		this.queuetodo = [];
 		this.queueordo = [];
-		this.config = new ConfigClass(config, this);
+		this.config = new ConfigClass(config);
 		var noClear = true;
 		var _t = this;
 		cleared ? this.cleared = true : (
@@ -195,8 +190,6 @@
 			return this.then(null, ordo);
 		},
 		next: function (doexpr, ordo, config) {
-			if (this.isPipe) return new Proce(null, null, true).next(doexpr, ordo, config);
-			if (typeof doexpr !== 'function') return this.then(doexpr, ordo).conf(config);
 			var proc = new Proce(null, this.config.get(config));
 			this.then(function () { return act(proc, doexpr, arguments); }, proc.fordo);
 			return proc.trap(ordo);
@@ -218,14 +211,11 @@
 		grab: function (doexpr, ordo, depth, config) {
 			return this.take(depth).next(doexpr, ordo, config);
 		},
-		conf: function (config, ordo) {
-			if (this.isPipe) return new Proce(null, null, true).conf(config);
-			var tcfg = this.config;
-			return this.then(function (n) { tcfg.set(config); return n; }, ordo);
+		conf: function (config) {
+			return this.then(function () { this.config = this.config.get(config); });
 		},
 		configAll: function (config) {
-			ConfigClass.configAll(config);
-			return this;
+			return this.then(function () { ConfigClass.configAll(config); });
 		},
 		todo: function () {
 			var proc = new Proce(null, null, true);
@@ -299,7 +289,4 @@
 		'one'
 	];
 	for (var i = pilist.length - 1; i >= 0; --i) pipe[pilist[i]] = proto[pilist[i]];
-	pipe.emptyProce = function (config) {
-		return new Proce(null, config)
-	};
 }());
