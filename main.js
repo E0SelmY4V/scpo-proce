@@ -12,13 +12,13 @@
 		? window.scpoProce = pipe
 		: module.exports = pipe;
 
-	function apply(f, t, p) {
+	function apply(f, p) {
 		switch (p.length) {
-			case 0: return f.call(t);
-			case 1: return f.call(t, p[0]);
-			case 2: return f.call(t, p[0], p[1]);
-			case 3: return f.call(t, p[0], p[1], p[2]);
-			default: return f.apply(t, p);
+			case 0: return f();
+			case 1: return f(p[0]);
+			case 2: return f(p[0], p[1]);
+			case 3: return f(p[0], p[1], p[2]);
+			default: return f.apply(null, p);
 		}
 	}
 	pipe.apply = apply;
@@ -78,7 +78,7 @@
 	function doRtn(_t, expr, param) {
 		return _t.nmArg ? expr(param) : (
 			_t.nmArg = true,
-			apply(expr, null, param)
+			apply(expr, param)
 		);
 	}
 	pipe.doRtn = doRtn;
@@ -87,7 +87,7 @@
 		var params = [_t.ftodo, _t.fordo];
 		if (args) for (var i = 0; i < args.length; i++) params.push(args[i]);
 		try {
-			var r = apply(doexpr, _t, params);
+			var r = apply(doexpr, params);
 			_t.config.trap !== 'none' && isThenable(r) && r.then(null, params[1]);
 			_t.acted = true;
 			return r;
@@ -203,7 +203,7 @@
 				_this.then(testf = function (rtn) {
 					isThenable(rtn) && depth-- !== 0
 						? rtn.then(testf, ordo)
-						: apply(todo, null, arguments);
+						: apply(todo, arguments);
 				}, ordo);
 			});
 			return typeof todo === 'function' || typeof ordo === 'function' ? proc.then(todo, ordo) : proc;
@@ -239,10 +239,10 @@
 						var a = arguments;
 						var j = a.length;
 						while (--j >= 0) (r[j] || (r[j] = []))[i] = a[j];
-						if (--c === 0) apply(todo, null, r);
+						if (--c === 0) apply(todo, r);
 					}, ordo);
 				})(i) : (--c, r[0][i] = l[i]);
-				c || apply(todo, null, r);
+				c || apply(todo, r);
 			});
 		},
 		one: function () {
