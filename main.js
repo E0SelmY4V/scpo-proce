@@ -59,12 +59,10 @@
 	}
 	ConfigClass.configAll = function (n) {
 		for (var i in n) ConfigClass.prototype[i] = n[i];
-		Proce.prototype.uncaught = typeof ConfigClass.prototype.ordo !== 'function';
 	};
 	ConfigClass.prototype = {
 		set: function (n) {
 			for (var i in n) this[i] = n[i];
-			this.proc.uncaught = typeof this.ordo !== 'function';
 		},
 		get: function (n) {
 			if (typeof n !== 'object' || n === null) return this;
@@ -147,17 +145,14 @@
 	pipe.toss = toss;
 
 	function tpus(_t, todo, ordo) {
-		var orf = typeof ordo === 'function';
-		var tof = typeof todo === 'function';
-		if (_t.uncaught) _t.uncaught = !orf;
 		if (_t.cleared) {
 			_t.pointer++;
 			clearTimeout(_t.lastDef);
 			_t.lastDef = null;
 			try {
-				_t.lastErr === null ? tof && (
+				_t.lastErr === null ? typeof todo === 'function' && (
 					_t.lastRtn = doRtn(_t, todo, _t.lastRtn)
-				) : orf && (
+				) : typeof ordo === 'function' && (
 					clearTimeout(_t.lastErr), _t.lastErr = null,
 					_t.lastRtn = doRtn(_t, ordo, _t.lastRtn)
 				);
@@ -191,7 +186,6 @@
 		lastDef: null,
 		config: null,
 		pointer: -1,
-		uncaught: true,
 		then: function (todo, ordo) {
 			if (this.isPipe) return new Proce(null, null, true).then(todo, ordo);
 			tpus(this, todo, ordo);
