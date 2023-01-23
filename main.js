@@ -55,7 +55,7 @@
 
 	function ConfigClass(n, proc) {
 		for (var i in n) this[i] = n[i];
-		if (typeof proc === 'object' && n !== null) this.proc = proc;
+		typeof proc === 'object' && n !== null && (this.proc = proc);
 	}
 	ConfigClass.configAll = function (n) {
 		for (var i in n) ConfigClass.prototype[i] = n[i];
@@ -80,13 +80,12 @@
 	pipe.config = new ConfigClass();
 
 	function doRtn(_t, expr, param) {
-		if (_t.nmArg) return expr(param);
-		else {
-			_t.nmArg = true;
-			return apply(expr, null, param);
-		}
+		return _t.nmArg ? expr(param) : (
+			_t.nmArg = true,
+			apply(expr, null, param)
+		);
 	}
-	pipe.doRtn;
+	pipe.doRtn = doRtn;
 
 	function act(_t, doexpr, args) {
 		var params = [_t.ftodo, _t.fordo];
@@ -104,11 +103,12 @@
 		var i = _t.pointer;
 		var q = _t.queuetodo;
 		var f = true;
-		while (++i < q.length) if (typeof q[i] === 'function') {
-			q[i].hidden || (f = false);
-			try { param = doRtn(_t, q[i], param); }
-			catch (errObj) { _t.pointer = i; param = exeordo(_t, errObj); i = _t.pointer; }
-		}
+		while (++i < q.length)
+			if (typeof q[i] === 'function') {
+				q[i].hidden || (f = false);
+				try { param = doRtn(_t, q[i], param); }
+				catch (errObj) { _t.pointer = i; param = exeordo(_t, errObj); i = _t.pointer; }
+			}
 		f && (_t.lastDef = setTimeout(function () {
 			_t.then(_t.config.todo, _t.config.ordo);
 		}));
@@ -120,11 +120,12 @@
 	function exeordo(_t, param) {
 		var i = _t.pointer;
 		var q = _t.queueordo;
-		while (++i < q.length) if (typeof q[i] === 'function') {
-			_t.pointer = i;
-			try { return doRtn(_t, q[i], param); }
-			catch (errObj) { return exeordo(_t, errObj); }
-		}
+		while (++i < q.length)
+			if (typeof q[i] === 'function') {
+				_t.pointer = i;
+				try { return doRtn(_t, q[i], param); }
+				catch (errObj) { return exeordo(_t, errObj); }
+			}
 		_t.pointer = i;
 		toss(_t, _t.nmArg ? param : param[0]);
 		return param;
@@ -168,8 +169,8 @@
 		var noClear = true;
 		var _t = this;
 		cleared ? this.cleared = true : (
-			this.ftodo = function () { if (noClear) noClear = false, clear(_t, arguments); },
-			this.fordo = function () { if (noClear) noClear = false, clear(_t, exeordo(_t, arguments)); },
+			this.ftodo = function () { noClear && (noClear = false, clear(_t, arguments)); },
+			this.fordo = function () { noClear && (noClear = false, clear(_t, exeordo(_t, arguments))); },
 			typeof doexpr === 'function' && act(this, doexpr)
 		);
 	}
@@ -206,12 +207,14 @@
 		},
 		take: function (todo, ordo, depth) {
 			if (this.isPipe) return new Proce(null, null, true).take(todo, ordo, depth);
-			typeof todo === 'number' ? (depth = todo) : (typeof depth === 'undefined' || depth === null) && (depth = -1);
+			typeof todo === 'number' ? depth = todo : typeof depth !== 'number' && (depth = -1);
 			var _this = this;
 			var testf;
 			var proc = new Proce(function (todo, ordo) {
 				_this.then(testf = function (rtn) {
-					isThenable(rtn) && depth-- !== 0 ? rtn.then(testf, ordo) : apply(todo, null, arguments);
+					isThenable(rtn) && depth-- !== 0
+						? rtn.then(testf, ordo)
+						: apply(todo, null, arguments);
 				}, ordo);
 			});
 			return typeof todo === 'function' || typeof ordo === 'function' ? proc.then(todo, ordo) : proc;
@@ -277,13 +280,13 @@
 			});
 		}
 	};
-	var voidP = Proce.prototype.todo;
 	pipe.Proce = Proce;
 
 	function pipe(doexpr, config) {
-		return typeof doexpr === 'function'
-			? new Proce(doexpr, config)
-			: apply(voidP, null, arguments);
+		if (typeof doexpr === 'function') return new Proce(doexpr, config);
+		var proc = new Proce(null, null, true);
+		proc.lastRtn = arguments;
+		return proc;
 	}
 	pipe.isPipe = true;
 	var proto = Proce.prototype;
