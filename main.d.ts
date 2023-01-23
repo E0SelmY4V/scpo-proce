@@ -3,6 +3,7 @@ import {
 	Accur,
 	ArrayLtdSplited,
 	Transposed,
+	SemiUnrequired,
 } from 'accurtype'
 declare namespace scpoProce {
 	type CbNor<P extends readonly any[] = any[], R = any, T extends readonly any[] = []> = (...arg: [...P, ...T]) => R
@@ -12,7 +13,7 @@ declare namespace scpoProce {
 	type ListGot<L, T = any[]> = L extends ArrayLike<any> ? L[0] extends T ? L[0] : L : L
 	type ListArrGot<L extends readonly any[]> = [L[0]] extends [readonly any[]] ? L[0] : L
 	const notModule: boolean
-	function apply<P extends any[], R>(f: (...param: [...P]) => R, t: any, p: P): R
+	function apply<P extends any[], R>(f: (...param: [...P]) => R, p: P): R
 	function isThenable(n: any): n is PromiseLike<any>
 	function isArrayLike(n: any): n is ArrayLike<any>
 	function arrayFrom<T>(n: ArrayLike<T>): T[]
@@ -31,14 +32,14 @@ declare namespace scpoProce {
 	type UedProceE<T extends readonly any[]> = ArrayLtdSplited<T> extends readonly [infer T0, readonly (infer S)[], infer T2] ? LtdUedProceE<T0> | ProceErrs<S> | LtdUedProceE<T2> : []
 	function getId(): number
 	function doRtn<R, T extends ProceN, P extends readonly any[] = ProceArgs<T>, E extends readonly any[] = ProceErrs<T>>(_t: T, expr: CbNor<P, R>, param: P | P[0] | E | E[0]): R
-	function act<R, T extends ProceN, R0 extends readonly any[] = [], P extends readonly any[] = ProceArgs<T>, E extends readonly any[] = ProceErrs<T>>(_t: T, doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): R
+	function act<R, T extends ProceN, R0 extends readonly any[] = [], P extends readonly any[] = ProceArgs<T>, E extends readonly any[] = ProceErrs<T>>(_t: T, doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): void
 	function clear<T extends ProceN, P extends readonly any[] = ProceArgs<T>>(_t: T, param: P | P[0]): void
 	function exeordo<T extends ProceN, E extends readonly any[] = ProceErrs<T>>(_t: T, param: E | E[0]): any
 	function toss<T extends ProceN, E extends readonly any[] = ProceErrs<T>>(_t: T, errObj: E[0]): void
-	function tpus<RT, T extends ProceN, RO = RT, P extends readonly any[] = ProceArgs<T>, E extends readonly any[] = ProceErrs<T>>(_t: T, todo?: CbNor<P, RT, any[]>, ordo?: CbNor<E, RO, any[]>): void
 	class Proce<P extends readonly any[] = any[], E extends readonly any[] = [any]> {
-		constructor(doexpr?: CbCur<P, E>, config?: Config, cleared?: boolean)
-		id: number
+		constructor(doexpr?: CbCur<P, E>, config?: Config<P, E>, cleared?: boolean)
+		ftodo: CbNor<P, void>
+		fordo: CbNor<E, void>
 		queuetodo: readonly CbNor<P>[]
 		queueordo: readonly CbNor<E>[]
 		cleared: boolean
@@ -47,21 +48,17 @@ declare namespace scpoProce {
 		lastRtn: P | P[0] | E | E[0]
 		lastErr: STimer
 		lastDef: STimer
-		config: ConfigClassN
+		config: ConfigClass<P, E>
 		pointer: number
-		before?: ProceN
-		uncaught: boolean
-		getBefore(n?: ProceArray): ProceArray
-		setBefore(n?: ProceArray | readonly ProceN[]): Proce<P, E>
 		then<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<P, RT, any[]>): Proce<[RT], E1 | E>
 		then<RT, RO = RT, E1 extends readonly any[] = [any]>(todo?: CbNor<P, RT, any[]>, ordo?: CbNor<E, RO, any[]>): Proce<[RT | RO], E1>
 		trap<RO, E1 extends readonly any[] = [any]>(ordo?: CbNor<E, RO, any[]>): Proce<P, E1> | Proce<[RO], E1>
-		next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, any[]>, config?: Config): Proce<P1, E1>
+		next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, any[]>, config?: Config<P1, E1>): Proce<P1, E1>
 		take<D extends number = -1>(depth?: D): ProceTaked<P, E, D>
 		take<RT, RO = RT, D extends number = -1, T1 = ProceTaked<P, E, D>>(todo: t.tf<T1, RT, 0>, ordo?: t.tf<T1, RO, 1>, depth?: D): Proce<[RT | RO]>
-		grab<P1 extends readonly any[], E1 extends readonly any[], D extends number = -1, PT extends readonly any[] = ProceTaked<P, E, D> extends Proce<infer P, readonly any[]> ? P : P>(doexpr?: CbNxt<P1, PT, E1>, ordo?: CbNor<E1, any, any[]>, depth?: D, config?: Config): Proce<P1, E1>
-		conf<E1>(config?: Config, ordo?: CbNor<E, E1, any[]>): t.cp<P, E1>
-		configAll(n?: Config): Proce<P, E>
+		grab<P1 extends readonly any[], E1 extends readonly any[], D extends number = -1, PT extends readonly any[] = ProceTaked<P, E, D> extends Proce<infer P, readonly any[]> ? P : P>(doexpr?: CbNxt<P1, PT, E1>, ordo?: CbNor<E1, any, any[]>, depth?: D, config?: Config<P1, E1>): Proce<P1, E1>
+		conf<E1>(config?: ConfigN, ordo?: CbNor<E, E1, any[]>): Proce<[], [E1]>
+		configAll(n?: ConfigN): Proce<P, E>
 		todo<A extends Accur<A>, P1 extends A[]>(...n: P1): Proce<P1, []>
 		ordo<A extends Accur<A>, E1 extends A[]>(...n: E1): Proce<[], E1>
 		snake<T extends readonly CbNxt[] | CbNxt, N extends T[]>(...n: [...N]): t.sn<ListArrGot<N>>
@@ -70,12 +67,12 @@ declare namespace scpoProce {
 	}
 	function then<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>): Proce<[RT], E1>
 	function trap(ordo?: CbNor<[]>): Proce<[], []>
-	function next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, config?: Config): Proce<P1, E1>
+	function next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, config?: Config<P1, E1>): Proce<P1, E1>
 	function take(depth?: number): Proce<[], []>
 	function take<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>, depth?: number): Proce<[RT], E1>
-	function grab<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, depth?: number, config?: Config): Proce<P1, E1>
-	function conf<E1>(config?: Config, ordo?: CbNor<[], E1, any[]>): t.cp<[], E1>
-	function configAll(): Proce<[], []>
+	function grab<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, depth?: number, config?: Config<P1, E1>): Proce<P1, E1>
+	function conf<E1>(config?: ConfigN, ordo?: CbNor<[], E1, any[]>): Proce<[], [E1]>
+	function configAll(n?: ConfigN): Proce<[], []>
 	function todo<A extends Accur<A>, P1 extends A[]>(...n: P1): Proce<P1, []>
 	function ordo<A extends Accur<A>, E1 extends A[]>(...n: E1): Proce<[], E1>
 	function snake<T extends readonly CbNxt[] | CbNxt, N extends T[]>(...n: [...N]): t.sn<ListArrGot<N>>
@@ -83,32 +80,28 @@ declare namespace scpoProce {
 	function all<A extends Accur<A>, T extends A | readonly A[], N extends T[]>(...n: [...N]): Proce<Transposed<UedProce<ListArrGot<N>>>, UedProceE<ListArrGot<N>>>
 	namespace t {
 		type tf<T1, R, W> = CbNor<T1 extends Proce<infer P, infer E> ? W extends 0 ? P : E : W extends 0 ? [] : [any], R, any[]>
-		type cp<P extends readonly any[], E1> = Proce<P extends readonly [] ? [] : P extends readonly [infer K, ...any[]] ? [K] : P, [E1]>
 		// type sf<F, P extends any[], A extends any[]> = SnakeRslt<[CbNxt<F extends CbNxt<infer K> ? K : any[], P>, ...A]>
 		// type sm<B extends any[], E1 extends any[], F, A extends any[]> = SnakeList<B, E1> | [F, ...A]
 		// type st<B extends any[], E1 extends any[]> = Proce<B extends [...any[], infer K] ? K : any[], E1>
 		type sn<T> = Proce<T extends readonly CbNxt<infer P1>[] ? P1 : any[], T extends readonly CbNxt<any[], any[], infer E1>[] ? E1 : [any]> extends Proce<infer P, infer E> ? Proce<P, E> : Proce
 	}
-	class ProceArray<P extends readonly any[] = any[], E extends readonly any[] = [any]> extends Array<Proce<P, E>> {
-		constructor(...proce: Proce<P, E>[])
-		then(todo?: CbNor<P, any[]>, ordo?: CbNor<E, any[]>): void
-		trap(ordo?: CbNor<E, any[]>): void
-		supp(ordo?: CbNor<E, any[]>): void
-		index: { [id: number]: true }
-		pointer: number
-	}
-	type Config = Omit<ConfigClass, 'get' | 'set'> | ConfigClass
-	type ConfigClassN = ConfigClass<readonly any[], readonly any[]>
-	class ConfigClass<P extends readonly any[] = any[], E extends readonly any[] = [any]> {
-		constructor(n: Config, proc?: Proce<P, E>)
-		static configAll(n?: Config): void
-		set(n?: Config): void
-		get(n?: Config): Config
-		trap: 'all' | 'no-trap' | 'none'
-		proc?: Proce<P, E>
+	interface Config<P extends readonly any[] = any[], E extends readonly any[] = [any]> {
+		actTrap?: boolean
+		errlv?: 'log' | 'throw' | 'ignore'
 		todo?: CbNor<P>
 		ordo?: CbNor<E>
 	}
+	type ConfigN = Config<readonly any[], readonly any[]>
+	class ConfigClass<P extends readonly any[] = any[], E extends readonly any[] = [any]> implements SemiUnrequired<Config<P, E>, 'todo' | 'ordo'> {
+		constructor(n: Config<P, E>, proc?: Proce<P, E>)
+		static configAll(n?: ConfigN): void
+		get<P1 extends readonly any[], E1 extends readonly any[]>(n?: Config<P1, E1>): ConfigClass<P1, E1>
+		todo?: CbNor<P>
+		ordo?: CbNor<E>
+		actTrap: boolean
+		errlv: ConfigN['errlv'] & {}
+	}
+	type ConfigClassN = ConfigClass<readonly any[], readonly any[]>
 	type Nxtable = ProceN | typeof scpoProce
 }
 /**
@@ -117,6 +110,6 @@ declare namespace scpoProce {
  * @license GPL-3.0-or-later
  * @link https://github.com/E0SelmY4V/scpo-proce
  */
-declare function scpoProce<P extends readonly any[], E extends readonly any[] = [any]>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config): scpoProce.Proce<P, E>
+declare function scpoProce<P extends readonly any[], E extends readonly any[] = [any]>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config<P, E>): scpoProce.Proce<P, E>
 declare function scpoProce<A extends Accur<A>, P extends A[]>(...arg: P): scpoProce.Proce<P, []>
 export = scpoProce

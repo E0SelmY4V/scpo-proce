@@ -90,7 +90,7 @@
 			var r = apply(doexpr, params);
 			isThenable(r) && _t.config.actTrap && r.then(null, _t.fordo);
 			_t.acted = true;
-		} catch (errObj) { _t.acted = true; return _t.fordo(errObj); }
+		} catch (errObj) { _t.acted = true; _t.fordo(errObj); }
 	}
 	pipe.act = act;
 
