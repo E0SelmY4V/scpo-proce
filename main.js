@@ -72,6 +72,7 @@
 			return n;
 		},
 		trap: 'all',
+		errlv: 'log',
 		proc: null,
 		todo: null,
 		ordo: null
@@ -135,8 +136,14 @@
 	function toss(_t, errObj) {
 		_t.lastErr = setTimeout(function () {
 			if (_t.lastDef !== null) return toss(_t, errObj);
-			else if (notModule && !window.console) throw errObj;
-			else return console.error('scpo-proce Uncaught', errObj);
+			switch (_t.config.errlv) {
+				case 'throw': throw errObj;
+				case 'log': typeof console !== 'undefined'
+					? typeof console.error === 'function'
+						? console.error('scpo-proce Uncaught', errObj)
+						: typeof console.log === 'function' && console.log('scpo-proce Uncaught', errObj)
+					: typeof alert === 'function' && alert((errObj || {}).message || errObj);
+			}
 		});
 	}
 	pipe.toss = toss;
