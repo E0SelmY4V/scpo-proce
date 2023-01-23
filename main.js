@@ -139,23 +139,6 @@
 	}
 	pipe.toss = toss;
 
-	function tpus(_t, todo, ordo) {
-		if (_t.cleared) {
-			_t.pointer++;
-			clearTimeout(_t.lastDef);
-			_t.lastDef = null;
-			try {
-				_t.lastErr === null ? typeof todo === 'function' && (
-					_t.lastRtn = doRtn(_t, todo, _t.lastRtn)
-				) : typeof ordo === 'function' && (
-					clearTimeout(_t.lastErr), _t.lastErr = null,
-					_t.lastRtn = doRtn(_t, ordo, _t.lastRtn)
-				);
-			} catch (errObj) { toss(_t, _t.lastRtn = errObj); }
-		} else _t.queueordo.push(ordo), _t.queuetodo.push(todo);
-	}
-	pipe.tpus = tpus;
-
 	function Proce(doexpr, config, cleared) {
 		this.queuetodo = [];
 		this.queueordo = [];
@@ -183,7 +166,19 @@
 		pointer: -1,
 		then: function (todo, ordo) {
 			if (this.isPipe) return new Proce(null, null, true).then(todo, ordo);
-			tpus(this, todo, ordo);
+			if (this.cleared) {
+				this.pointer++;
+				clearTimeout(this.lastDef);
+				this.lastDef = null;
+				try {
+					this.lastErr === null ? typeof todo === 'function' && (
+						this.lastRtn = doRtn(this, todo, this.lastRtn)
+					) : typeof ordo === 'function' && (
+						clearTimeout(this.lastErr), this.lastErr = null,
+						this.lastRtn = doRtn(this, ordo, this.lastRtn)
+					);
+				} catch (errObj) { toss(this, this.lastRtn = errObj); }
+			} else this.queueordo.push(ordo), this.queuetodo.push(todo);
 			return this;
 		},
 		trap: function (ordo) {
