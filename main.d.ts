@@ -20,6 +20,8 @@ declare namespace scpoProce {
 	type ListArrGot<L extends readonly any[]> = [L[0]] extends [readonly any[]] ? L[0] : L
 	/**是否在裸浏览器环境下 */
 	const notModule: boolean
+	/**是否有 `Object.keys` 方法可以用 */
+	const hasObject_keys: boolean
 	/**以数组形式的参数调用函数 */
 	function apply<P extends any[], R>(f: (...param: [...P]) => R, p: P): R
 	/**判断是否是 Thenable */

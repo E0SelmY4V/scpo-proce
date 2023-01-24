@@ -7,10 +7,11 @@
 'use strict';
 (function () {
 	var notModule = typeof module === 'undefined';
-	var voidArray = [];
 	(pipe.notModule = notModule)
 		? window.scpoProce = pipe
 		: module.exports = pipe;
+	var hasObject_keys = pipe.hasObject_keys = typeof Object !== 'undefined' && typeof Object.keys === 'function';
+	var voidArray = [];
 
 	function apply(f, p) {
 		switch (p.length) {
@@ -61,7 +62,7 @@
 		for (var i in n) ConfigClass.prototype[i] = n[i];
 	};
 	ConfigClass.prototype = {
-		set: typeof Object !== 'undefined' && typeof Object.keys === 'function'
+		set: hasObject_keys
 			? function (n) {
 				for (var i in n) this[i] = n[i];
 				return this;
@@ -71,7 +72,7 @@
 				for (var i in n) this._seted.push(i), this[i] = n[i];
 				return this;
 			},
-		get: typeof Object !== 'undefined' && typeof Object.keys === 'function'
+		get: hasObject_keys
 			? function (n) {
 				var r = new ConfigClass(n);
 				var seted = Object.keys(this);
