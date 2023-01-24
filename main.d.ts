@@ -13,7 +13,7 @@ declare namespace scpoProce {
 	/**带上次异步返回值的异步函数 */
 	type CbNxt<P extends readonly any[] = any[], P0 extends readonly any[] = [], E extends readonly any[] = [any], R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>, ...P0], R, any[]>
 	/**或有或无计时器 */
-	type STimer = number | null
+	type STimer = ReturnType<typeof setTimeout> | null
 	/**`ArrayLike<T> | ArrayLike<ArrayLike<T>>` 中的 `ArrayLike<T>` */
 	type ListGot<L, T = any[]> = L extends ArrayLike<any> ? L[0] extends T ? L[0] : L : L
 	/**`T[] | [T[], ...any[]]` 中的 `T[]` */
