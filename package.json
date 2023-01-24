@@ -1,6 +1,6 @@
 {
   "name": "scpo-proce",
-  "version": "1.10120.1",
+  "version": "2.10124.0",
   "description": "Make your async programming easier",
   "main": "main.js",
   "scripts": {
