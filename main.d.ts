@@ -186,6 +186,8 @@ declare namespace scpoProce {
 		constructor(n: Config<P, E>, proc?: Proce<P, E>)
 		/**修改全局默认配置 */
 		static configAll(n?: ConfigN): void
+		/**修改自己的配置 */
+		set<P1 extends readonly any[], E1 extends readonly any[]>(n?: Config<P1, E1>): ConfigClass<P1, E1>
 		/**以传入参数为主，使用自己补充，得到一个新的 Proce 配置类 */
 		get<P1 extends readonly any[], E1 extends readonly any[]>(n?: Config<P1, E1>): ConfigClass<P1, E1>
 		todo?: CbNor<P>

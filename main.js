@@ -55,20 +55,37 @@
 
 	function ConfigClass(n) {
 		if (n && n._isProceConfig) return n;
-		this._seted = [];
-		for (var i in n) this._seted.push(i), this[i] = n[i];
+		this.set(n);
 	}
 	ConfigClass.configAll = function (n) {
 		for (var i in n) ConfigClass.prototype[i] = n[i];
 	};
 	ConfigClass.prototype = {
-		get: function (n) {
-			var r = new ConfigClass(n);
-			var seted = this._seted;
-			if (!n) for (var i = seted.length - 1; i >= 0; --i) r[seted[i]] = this[seted[i]], r._seted.push(seted[i]);
-			else for (var i = seted.length - 1; i >= 0; --i) seted[i] in n || (r[seted[i]] = this[seted[i]], r._seted.push(seted[i]));
-			return r;
-		},
+		set: typeof Object !== 'undefined' && typeof Object.keys === 'function'
+			? function (n) {
+				for (var i in n) this[i] = n[i];
+				return this;
+			}
+			: function (n) {
+				this._seted || (this._seted = []);
+				for (var i in n) this._seted.push(i), this[i] = n[i];
+				return this;
+			},
+		get: typeof Object !== 'undefined' && typeof Object.keys === 'function'
+			? function (n) {
+				var r = new ConfigClass(n);
+				var seted = Object.keys(this);
+				if (!n) for (var i = seted.length - 1; i >= 0; --i) r[seted[i]] = this[seted[i]];
+				else for (var i = seted.length - 1; i >= 0; --i) seted[i] in n || (r[seted[i]] = this[seted[i]]);
+				return r;
+			}
+			: function (n) {
+				var r = new ConfigClass(n);
+				var seted = this._seted;
+				if (!n) for (var i = seted.length - 1; i >= 0; --i) r[seted[i]] = this[seted[i]], r._seted.push(seted[i]);
+				else for (var i = seted.length - 1; i >= 0; --i) seted[i] in n || (r[seted[i]] = this[seted[i]], r._seted.push(seted[i]));
+				return r;
+			},
 		actTrap: true,
 		errlv: 'log',
 		todo: null,
