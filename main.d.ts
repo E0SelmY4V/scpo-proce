@@ -45,7 +45,7 @@ declare namespace scpoProce {
 	/**以 `Proce.prototype.one` 的形式处理的结果参数数组 */
 	type OnedArgs<T extends readonly any[]> = T extends readonly (infer K)[] ? ProceArgs<K> : never;
 	/**以 `Proce.prototype.all` 的形式处理的结果参数元组 */
-	type LtdUedProce<T> = T extends readonly [infer K, ...infer T1] ? [ProceArgs<K>, ...LtdUedProce<T1>] : []
+	type LtdUedProce<T, R extends any[] = []> = T extends readonly [infer K, ...infer T1] ? LtdUedProce<T1, [...R, ProceArgs<K>]> : []
 	/**以 `Proce.prototype.all` 的形式处理的结果参数数组 */
 	type UedProce<T extends readonly any[]> = ArrayLtdSplited<T> extends readonly [infer T0, readonly (infer S)[], infer T2] ? [...LtdUedProce<T0>, ...([ProceArgs<S>] extends [never] ? [] : ProceArgs<S>[]), ...LtdUedProce<T2>] : []
 	/**以多 Proce 工具的形式处理的异常参数元组 */
