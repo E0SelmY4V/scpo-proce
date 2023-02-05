@@ -138,9 +138,9 @@ declare namespace scpoProce {
 		/**@see {@link all|`scpoProce.all`} */
 		all: typeof all
 	}
-	/**得到一个添加了回调和异常捕获回调的 {@link Proce|`Proce`} */
+	/**得到一个添加了回调和异常捕获回调的 {@link Proce|`Proce`} 实例 */
 	function then<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>): Proce<[RT], E1>
-	/**得到了一个添加了异常捕获回调 {@link Proce|`Proce`} */
+	/**得到了一个添加了异常捕获回调 {@link Proce|`Proce`} 实例 */
 	function trap(ordo?: CbNor<[]>): Proce<[], []>
 	/**开启异步 */
 	function next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, config?: Config<P1, E1>): Proce<P1, E1>
@@ -150,13 +150,13 @@ declare namespace scpoProce {
 	function take<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>, depth?: number): Proce<[RT], E1>
 	/**@see {@link next|`scpoProce.next`} */
 	function grab<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, depth?: number, config?: Config<P1, E1>): Proce<P1, E1>
-	/**得到一个修改了配置的 {@link Proce|`Proce`} */
+	/**得到一个修改了配置的 {@link Proce|`Proce`} 实例 */
 	function conf<E1>(config?: ConfigN, ordo?: CbNor<[], E1, any[]>): Proce<[], [E1]>
 	/**@see {@link ConfigClass.configAll|`ConfigClass.configAll`} */
 	function configAll(n?: ConfigN): Proce<[], []>
-	/**得到一个以 {@link n} 为异步结果的已经完成的 {@link Proce|`Proce`} */
+	/**得到一个以 {@link n} 为异步结果的已经完成的 {@link Proce|`Proce`} 实例 */
 	function todo<A extends Accur<A>, P1 extends A[]>(...n: P1): Proce<P1, []>
-	/**得到一个以 {@link n} 为未捕获异步错误的已经完成的 {@link Proce|`Proce`} */
+	/**得到一个以 {@link n} 为未捕获异步错误的已经完成的 {@link Proce|`Proce`} 实例 */
 	function ordo<A extends Accur<A>, E1 extends A[]>(...n: E1): Proce<[], E1>
 	/**异步一个接一个 */
 	function snake<T extends readonly CbNxt[] | CbNxt, N extends T[]>(...n: [...N]): t.sn<ListArrGot<N>>
