@@ -4,6 +4,16 @@ import {
 	ArrayLtdSplited,
 	Transposed,
 } from 'accurtype'
+declare namespace t {
+	import S = scpoProce
+	type lu<T, R extends any[] = []> = T extends readonly [infer K, ...infer T1] ? lu<T1, [...R, S.ProceArgs<K>]> : []
+	type le<T> = T extends readonly [infer K, ...infer T1] ? S.ProceErrs<K> | le<T1> : never
+	type tf<T1, R, W> = S.CbNor<T1 extends S.Proce<infer P, infer E> ? W extends 0 ? P : E : W extends 0 ? [] : [any], R, any[]>
+	// type sf<F, P extends any[], A extends any[]> = SnakeRslt<[CbNxt<F extends CbNxt<infer K> ? K : any[], P>, ...A]>
+	// type sm<B extends any[], E1 extends any[], F, A extends any[]> = SnakeList<B, E1> | [F, ...A]
+	// type st<B extends any[], E1 extends any[]> = Proce<B extends [...any[], infer K] ? K : any[], E1>
+	type sn<T> = S.Proce<T extends readonly S.CbNxt<infer P1>[] ? P1 : any[], T extends readonly S.CbNxt<any[], any[], infer E1>[] ? E1 : [any]> extends S.Proce<infer P, infer E> ? S.Proce<P, E> : S.Proce
+}
 declare namespace scpoProce {
 	/**类型参数 {@link T} 作为数组时的第一个元素，或 `undefined` */
 	type First<T> = T extends [infer S, ...any[]] ? S : undefined
@@ -152,15 +162,6 @@ declare namespace scpoProce {
 	function one<A extends Accur<A>, T extends A | readonly A[], N extends T[]>(...n: [...N]): Proce<OnedArgs<ListArrGot<N>>, UedProceE<ListArrGot<N>>>
 	/**得到数组中所有 {@link Proce|`Proce`} 的异步结果 */
 	function all<A extends Accur<A>, T extends A | readonly A[], N extends T[]>(...n: [...N]): Proce<Transposed<UedProce<ListArrGot<N>>>, UedProceE<ListArrGot<N>>>
-	namespace t {
-		type lu<T, R extends any[] = []> = T extends readonly [infer K, ...infer T1] ? lu<T1, [...R, ProceArgs<K>]> : []
-		type le<T> = T extends readonly [infer K, ...infer T1] ? ProceErrs<K> | le<T1> : never
-		type tf<T1, R, W> = CbNor<T1 extends Proce<infer P, infer E> ? W extends 0 ? P : E : W extends 0 ? [] : [any], R, any[]>
-		// type sf<F, P extends any[], A extends any[]> = SnakeRslt<[CbNxt<F extends CbNxt<infer K> ? K : any[], P>, ...A]>
-		// type sm<B extends any[], E1 extends any[], F, A extends any[]> = SnakeList<B, E1> | [F, ...A]
-		// type st<B extends any[], E1 extends any[]> = Proce<B extends [...any[], infer K] ? K : any[], E1>
-		type sn<T> = Proce<T extends readonly CbNxt<infer P1>[] ? P1 : any[], T extends readonly CbNxt<any[], any[], infer E1>[] ? E1 : [any]> extends Proce<infer P, infer E> ? Proce<P, E> : Proce
-	}
 	/**
 	 * {@link Proce|`Proce`} 配置
 	 *
