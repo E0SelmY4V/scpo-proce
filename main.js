@@ -6,10 +6,15 @@
  */
 'use strict';
 (function () {
-	var notModule = typeof module === 'undefined';
-	(pipe.notModule = notModule)
-		? window.scpoProce = pipe
-		: module.exports = pipe;
+	function pipe(doexpr, config) {
+		if (typeof doexpr === 'function') return new Proce(doexpr, config);
+		var proc = new Proce(null, null, true);
+		proc.lastRtn = arguments;
+		return proc;
+	}
+	pipe.isPipe = true;
+
+	var notModule = pipe.notModule = typeof module === 'undefined';
 	var hasObject_keys = pipe.hasObject_keys = typeof Object !== 'undefined' && typeof Object.keys === 'function';
 	var voidArray = [];
 
@@ -287,13 +292,6 @@
 	};
 	pipe.Proce = Proce;
 
-	function pipe(doexpr, config) {
-		if (typeof doexpr === 'function') return new Proce(doexpr, config);
-		var proc = new Proce(null, null, true);
-		proc.lastRtn = arguments;
-		return proc;
-	}
-	pipe.isPipe = true;
 	var proto = Proce.prototype;
 	var pilist = [
 		'then',
@@ -310,4 +308,5 @@
 		'one'
 	];
 	for (var i = pilist.length - 1; i >= 0; --i) pipe[pilist[i]] = proto[pilist[i]];
+	notModule ? window.scpoProce = pipe : module.exports = pipe;
 }());

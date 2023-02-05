@@ -22,6 +22,8 @@ declare namespace scpoProce {
 	const notModule: boolean
 	/**是否有 `Object.keys` 方法可以用 */
 	const hasObject_keys: boolean
+	/**用来区分 {@link scpoProce|`scpoProce`} 和 {@link Proce|`Proce` 实例} */
+	const isPipe: true
 	/**以数组形式的参数调用函数 */
 	function apply<P extends any[], R>(f: (...param: [...P]) => R, p: P): R
 	/**判断是否是 Thenable */
