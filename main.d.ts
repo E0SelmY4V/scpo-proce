@@ -184,7 +184,7 @@ declare namespace scpoProce {
 	/**任意 Proce 配置 */
 	type ConfigN = Config<readonly any[], readonly any[]>
 	/**Proce 配置类 */
-	class ConfigClass<P extends readonly any[] = any[], E extends readonly any[] = [any]> implements SemiUnrequired<Config<P, E>, 'todo' | 'ordo'> {
+	class ConfigClass<P extends readonly any[] = any[], E extends readonly any[] = [any]> implements Config<P, E> {
 		constructor(n: Config<P, E>, proc?: Proce<P, E>)
 		/**修改全局默认配置 */
 		static configAll(n?: ConfigN): void
