@@ -83,9 +83,7 @@ declare global {
 		 *
 		 * 类型参数 {@link P} 表示异步结果，类型参数 {@link E} 表示异步异常
 		 */
-		class Proce<P extends readonly any[] = any[], E extends readonly any[] = [any]> {
-			/**以 {@link doexpr} 为异步操作的执行器，以 {@link config} 为配置，得到一个异步过程类。若 {@link cleared} 为 `true` 则得到一个已经完成的异步过程类且不会执行 {@link doexpr} */
-			constructor(doexpr?: CbCur<P, E>, config?: Config<P, E>, cleared?: boolean);
+		interface Proce<P extends readonly any[] = any[], E extends readonly any[] = [any]> {
 			/**异步执行器接受的 `todo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `resolve` 参数) */
 			ftodo: CbNor<P, void>;
 			/**异步执行器接受的 `ordo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `reject` 参数) */
@@ -139,6 +137,11 @@ declare global {
 			/**@see {@link all|`scpoProce.all`} */
 			all: typeof all;
 		}
+		/**{@link Proce|异步过程类} 构造器 */
+		interface ProceConstructor {
+			new <P extends readonly any[] = any[], E extends readonly any[] = [any]>(doexpr?: CbCur<P, E>, config?: Config<P, E>, cleared?: boolean): Proce<P, E>;
+		}
+		const Proce: ProceConstructor;
 		/**得到一个添加了回调和异常捕获回调的 {@link Proce|`Proce`} 实例 */
 		function then<RT, E1 extends readonly any[] = [any]>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>): Proce<[RT], E1>;
 		/**得到了一个添加了异常捕获回调 {@link Proce|`Proce`} 实例 */
@@ -198,19 +201,21 @@ declare global {
 		/**任意 {@link Config|`Proce` 配置} */
 		type ConfigN = Config<readonly any[], readonly any[]>;
 		/**{@link Proce|`Proce`} 配置类 */
-		class ConfigClass<P extends readonly any[] = any[], E extends readonly any[] = [any]> implements Config<P, E> {
-			constructor(n: Config<P, E>, proc?: Proce<P, E>);
-			/**修改全局默认配置，也就是修改配置类的原型属性 */
-			static configAll(n?: ConfigN): void;
+		interface ConfigClass<P extends readonly any[] = any[], E extends readonly any[] = [any]> extends Config<P, E> {
 			/**修改自己的配置 */
 			set<P1 extends readonly any[], E1 extends readonly any[]>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
 			/**以 {@link n} 为主，使用自己补充，得到一个新的 {@link ConfigClass|`Proce` 配置类} */
 			get<P1 extends readonly any[], E1 extends readonly any[]>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
-			todo?: Config<P, E>['todo'];
-			ordo?: Config<P, E>['ordo'];
 			actTrap: {} & ConfigN['actTrap'];
 			errlv: {} & ConfigN['errlv'];
 		}
+		/**{@link ConfigClass|`Proce` 配置类} 构造器 */
+		interface ConfigClassConstructor {
+			new <P extends readonly any[] = any[], E extends readonly any[] = [any]>(n: Config<P, E>, proc?: Proce<P, E>): ConfigClass<P, E>;
+			/**修改全局默认配置，也就是修改配置类的原型属性 */
+			configAll(n?: ConfigN): void;
+		}
+		const ConfigClass: ConfigClassConstructor;
 		/**任意 {@link ConfigClass|`Proce` 配置类} */
 		type ConfigClassN = ConfigClass<readonly any[], readonly any[]>;
 		/**可以执行异步执行器的东西 */
