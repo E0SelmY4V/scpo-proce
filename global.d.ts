@@ -114,6 +114,8 @@ declare global {
 			then<RT, RO = RT, E1 extends readonly any[] = [any]>(todo?: CbNor<P, RT, any[]>, ordo?: CbNor<E, RO, any[]>): Proce<[RT | RO], E1>;
 			/**添加异常捕获回调 */
 			trap<RO, E1 extends readonly any[] = [any]>(ordo?: CbNor<E, RO, any[]>): Proce<P, E1> | Proce<[RO], E1>;
+			/**@see {@link ProceN.trap|`Proce#trap`} */
+			catch: Proce['trap'];
 			/**开启第二次异步 */
 			next<P1 extends readonly any[], E1 extends readonly any[]>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, any[]>, config?: Config<P1, E1>): Proce<P1, E1>;
 			/**以 {@link depth} 为最大深度提取 {@link P} 里的 {@link Proce|`Proce`} */

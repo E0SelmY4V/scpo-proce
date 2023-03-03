@@ -290,6 +290,7 @@
 			});
 		}
 	};
+	Proce.prototype['catch'] = Proce.prototype.trap;
 	pipe.Proce = Proce;
 
 	var proto = Proce.prototype;
