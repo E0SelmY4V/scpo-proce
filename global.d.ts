@@ -58,11 +58,11 @@ declare global {
 		type ProceTaked<P extends readonly any[], E extends readonly any[], D extends number = -1> = D extends 0 ? Proce<P, E> : P extends readonly [Proce<infer PI, infer EI>, ...any[]] ? (number extends D ? Proce<P, E> : never) | ProceTaked<PI, EI | E, SntXcrNum<9, D, number>> : Proce<P, E>;
 		// type SnakeList<T extends any[][], E extends any[] = [any]> = T extends [infer P0 extends any[], infer P extends any[], ...infer K extends any[]] ? [CbNxt<P, P0, E>, ...SnakeList<[P, ...K], E>] : []
 		// type SnakeRslt<T extends any[], F = 0> = T extends [CbNxt<infer P, infer S>, ...infer K extends any[]] ? [...(F extends 0 ? [S, P] : [P]), ...SnakeRslt<K, 1>] : [];
-		/**以 {@link Proce.prototype.one|`Proce#one`} 的形式处理的异步结果 */
+		/**以 {@link ProceN.one|`Proce#one`} 的形式处理的异步结果 */
 		type OnedArgs<T extends readonly any[]> = T extends readonly (infer K)[] ? ProceArgs<K> : never;
-		/**以 {@link Proce.prototype.all|`Proce#all`} 的形式处理的异步结果 */
+		/**以 {@link ProceN.all|`Proce#all`} 的形式处理的异步结果 */
 		type UedProce<T extends readonly any[]> = ArrayLtdSplited<T> extends readonly [infer T0, readonly (infer S)[], infer T2] ? [...t.lu<T0>, ...([ProceArgs<S>] extends [never] ? [] : ProceArgs<S>[]), ...t.lu<T2>] : [];
-		/**多 {@link Proce|`Proce`} 工具。包含 {@link Proce.prototype.one|`Proce#one`}、{@link Proce.prototype.all|`Proce#all`}、{@link Proce.prototype.snake|`Proce#snake`} */
+		/**多 {@link Proce|`Proce`} 工具。包含 {@link ProceN.one|`Proce#one`}、{@link ProceN.all|`Proce#all`}、{@link ProceN.snake|`Proce#snake`} */
 		type InterProceTool = Proce['one' | 'all' | 'snake'];
 		/**以 {@link InterProceTool|多 `Proce` 工具} 的形式处理的异步异常 */
 		type UedProceE<T extends readonly any[]> = ArrayLtdSplited<T> extends readonly [infer T0, readonly (infer S)[], infer T2] ? t.le<T0> | ProceErrs<S> | t.le<T2> : [];
@@ -137,8 +137,8 @@ declare global {
 			/**@see {@link all|`scpoProce.all`} */
 			all: typeof all;
 		}
-		/**{@link Proce|异步过程类} 构造器 */
 		interface ProceConstructor {
+			/**构造一个 {@link Proce|异步过程类} */
 			new <P extends readonly any[] = any[], E extends readonly any[] = [any]>(doexpr?: CbCur<P, E>, config?: Config<P, E>, cleared?: boolean): Proce<P, E>;
 		}
 		const Proce: ProceConstructor;
@@ -209,8 +209,8 @@ declare global {
 			actTrap: {} & ConfigN['actTrap'];
 			errlv: {} & ConfigN['errlv'];
 		}
-		/**{@link ConfigClass|`Proce` 配置类} 构造器 */
 		interface ConfigClassConstructor {
+			/**构造一个 {@link ConfigClass|`Proce` 配置类} */
 			new <P extends readonly any[] = any[], E extends readonly any[] = [any]>(n: Config<P, E>, proc?: Proce<P, E>): ConfigClass<P, E>;
 			/**修改全局默认配置，也就是修改配置类的原型属性 */
 			configAll(n?: ConfigN): void;
