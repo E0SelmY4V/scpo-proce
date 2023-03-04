@@ -91,6 +91,8 @@ declare global {
 			one<A extends Accur<A>, T extends A | AnyArr<A>, N extends T[]>(...n: [...N]): Proce<OnedArgs<ListArrGot<N>>, UedProceE<ListArrGot<N>>>;
 			/**得到数组中所有 {@link Proce|`Proce`} 的异步结果 */
 			all<A extends Accur<A>, T extends A | AnyArr<A>, N extends T[]>(...n: [...N]): Proce<Transposed<UedProce<ListArrGot<N>>>, UedProceE<ListArrGot<N>>>;
+			/**配置 */
+			config: ConfigClass<P, E>;
 		}
 		/**
 		 * 异步过程类
@@ -118,8 +120,6 @@ declare global {
 			lastErr: STimer;
 			/**{@link Config.todo|默认回调} 或 {@link Config.ordo|默认异常捕获回调} 的调用计时器 */
 			lastDef: STimer;
-			/**配置 */
-			config: ConfigClass<P, E>;
 			/**回调处理到的位置 */
 			pointer: number;
 		}
