@@ -190,6 +190,8 @@ declare global {
 			notModule: boolean;
 			/**是否有 {@link Object.keys|`Object.keys`} 方法可以用 */
 			hasObject_keys: boolean;
+			/**当前环境可以如何报错 */
+			errAbled: "log" | "alert" | "error" | "none";
 			/**用来区分 {@link scpoProce|`scpoProce`} 和 {@link Proce|`Proce` 实例} */
 			isPipe: true;
 			/**以数组形式的参数 {@link p} 调用函数 {@link f} */

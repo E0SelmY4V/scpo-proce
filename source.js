@@ -13,6 +13,7 @@ function pipe(doexpr, config) {
 pipe.isPipe = true;
 const notModule = pipe.notModule = typeof module === 'undefined';
 const hasObject_keys = pipe.hasObject_keys = typeof Object?.keys === 'function';
+const errAbled = pipe.errAbled = typeof console === 'undefined' ? 'alert' : typeof console?.error === 'function' ? 'error' : typeof console?.log === 'function' ? 'log' : 'none';
 const voidArray = [];
 const apply = pipe.apply = (f, p) => {
 	switch (p.length) {
@@ -116,15 +117,20 @@ const exeordo = pipe.exeordo = (_t, param) => {
 	toss(_t, _t.nmArg ? param : param[0]);
 	return param;
 };
-const toss = pipe.toss = (_t, errObj) => _t.lastErr = setTimeout(() => {
-	if (_t.lastDef !== null) return toss(_t, errObj);
-	switch (_t.config.errlv) {
-		case 'throw': throw errObj;
-		case 'log': typeof console?.log !== 'undefined'
-			? console[typeof console.error === 'function' ? 'error' : 'log']('scpo-proce Uncaught', errObj)
-			: typeof alert === 'function' && alert(errObj?.message ?? errObj);
-	}
-});
+const toss = pipe.toss = (_t, errObj) => {
+	const temp = _t; // Why IE needs this line of code??
+	temp.lastErr = setTimeout(() => {
+		if (temp.lastDef !== null) return toss(temp, errObj);
+		switch (temp.config.errlv) {
+			case 'throw': throw errObj;
+			case 'log': switch (errAbled) {
+				case 'error': console.error('scpo-proce Uncaught', errObj);
+				case 'log': console.log('scpo-proce Uncaught', errObj);
+				case 'alert': try { alert(`scpo-proce Uncaught ${errObj?.message ?? errObj}`); } catch { }
+			}
+		}
+	});
+};
 
 function Proce(doexpr, config, cleared) {
 	this.queuetodo = [];

@@ -21,7 +21,7 @@ const br = `
 		'close',
 	);
 	const cmt = cmtArr.join(br) + br;
-	const source = sourceArr.join('');
+	const source = sourceArr.join(br);
 	await fsp.writeFile('./main.js', cmt + (await minify(
 		{
 			'source.js': `(()=>{${source}})();`,
