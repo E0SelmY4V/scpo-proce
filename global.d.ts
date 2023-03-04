@@ -74,7 +74,7 @@ declare global {
 			/**@see {@link Nxtlike.trap|`Proce#trap`} */
 			catch: Nxtlike<P, E>['trap'];
 			/**以 {@link doexpr} 为 {@link Executor|异步执行器} ，以 {@link config} 为配置选项，再开启一个异步 */
-			next<P1 extends AnyArr, E1 extends AnyArr = DefE>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, AnyArr>, config?: Config<P1, E1>): Proce<P1, E1>;
+			next<P1 extends AnyArr, E1 extends AnyArr = DefE>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, AnyArr>, config?: NxtConfig<P1, E1>): Proce<P1, E1>;
 			/**以 {@link depth} 为最大深度提取 {@link P} 里的 {@link Proce|`Proce`} */
 			take<D extends number = -1>(depth?: D): ProceTaked<P, E, D>;
 			/**提取到 {@link Proce|`Proce`} 之后给其添加回调和异常捕获回调 */
@@ -161,16 +161,26 @@ declare global {
 			 */
 			ordo?: CbNor<E> | null;
 		}
+		/**连续异步的配置 */
+		interface NxtConfig<P extends AnyArr, E extends AnyArr> extends Config<P, E> {
+			/**
+			 * 是否需要截断异常捕获链
+			 * @default false
+			 */
+			stopTrap?: null | boolean;
+		}
+		interface AllConfig<P extends AnyArr, E extends AnyArr> extends NxtConfig<P, E>, Config<P, E> { }
 		/**任意 {@link Config|`Proce` 配置} */
-		type ConfigN = Config<AnyArr, AnyArr>;
+		type ConfigN = AllConfig<AnyArr, AnyArr>;
 		/**{@link Proce|`Proce`} 配置类 */
-		interface ConfigClass<P extends AnyArr, E extends AnyArr> extends Config<P, E> {
+		interface ConfigClass<P extends AnyArr, E extends AnyArr> extends AllConfig<P, E> {
 			/**修改自己的配置 */
 			set<P1 extends AnyArr, E1 extends AnyArr = DefE>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
 			/**以 {@link n} 为主，使用自己补充，得到一个新的 {@link ConfigClass|`Proce` 配置类} */
 			get<P1 extends AnyArr, E1 extends AnyArr = DefE>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
-			actTrap: {} & ConfigN['actTrap'];
-			errlv: {} & ConfigN['errlv'];
+			actTrap: {} & Config<P, E>['actTrap'];
+			errlv: {} & Config<P, E>['errlv'];
+			stopTrap: {} & NxtConfig<P, E>['stopTrap'];
 		}
 		interface ConfigClassConstructor {
 			/**构造一个 {@link ConfigClass|`Proce` 配置类} */

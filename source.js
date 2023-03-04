@@ -51,6 +51,7 @@ ConfigClass.prototype = {
 	todo: null,
 	ordo: null,
 	_isProceConfig: true,
+	stopTrap: false,
 };
 forIn(ConfigClass.prototype, hasObject_keys ? {
 	set(n) {
@@ -180,7 +181,8 @@ Proce.prototype = {
 	next(doexpr, ordo, config) {
 		const _this = this;
 		const proc = new Proce();
-		this.then((...a) => (proc.config = _this.config.get(config), act(proc, doexpr, a)), proc.fordo);
+		const cfg = _this.config.get(config);
+		this.then((...a) => (proc.config = cfg, act(proc, doexpr, a)), cfg.stopTrap || proc.fordo);
 		return typeof ordo === 'function' ? proc.trap(ordo) : proc;
 	},
 	take(todo, ordo, depth) {

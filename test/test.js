@@ -39,7 +39,7 @@ const test = {
 			todo: function (d) { alert(d); },
 			ordo: function () { alert('err!'); }
 		});
-		scpoProce((res, rej) => setTimeout(res, 1000))
+		scpoProce((res, rej) => setTimeout(res, 1000));
 		return scpoProce(res => setTimeout(res, 1500));
 	},
 	'all方法'() {
@@ -60,6 +60,13 @@ const test = {
 		scpoProce.conf({
 			todo: () => alert(123)
 		}).next(todo => setTimeout(todo, 500));
+	},
+	'截断捕获链'() {
+		scpoProce.configAll({ stopTrap: true });
+		scpoProce(a => setTimeout(a, 200))
+			.then(() => alet(1))
+			.next(a => setTimeout(a, 200), null, { stopTrap: false })
+			.then(() => alert(1), a => alert(123));
 	}
 };
 module.exports = async () => {
