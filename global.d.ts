@@ -15,7 +15,7 @@ declare namespace t {
 	// type sf<F, P extends any[], A extends any[]> = SnakeRslt<[CbNxt<F extends CbNxt<infer K> ? K : any[], P>, ...A]>
 	// type sm<B extends any[], E1 extends any[], F, A extends any[]> = SnakeList<B, E1> | [F, ...A]
 	// type st<B extends any[], E1 extends any[]> = Proce<B extends [...any[], infer K] ? K : any[], E1>
-	type sn<T> = S.Proce<T extends AnyArr<S.CbNxt<infer P1>> ? P1 : S.DefP, T extends AnyArr<S.CbNxt<AnyArr, AnyArr, infer E1>> ? E1 : S.DefE> extends S.Proce<infer P, infer E> ? S.Proce<P, E> : S.DefProce;
+	// type sn<T> = S.Proce<T extends AnyArr<S.CbNxt<infer P1>> ? P1 : S.DefP, T extends AnyArr<S.CbNxt<AnyArr, AnyArr, infer E1>> ? E1 : S.DefE> extends S.Proce<infer P, infer E> ? S.Proce<P, E> : S.DefProce;
 }
 declare global {
 	namespace scpoProce {
@@ -25,6 +25,8 @@ declare global {
 		type CbCur<P extends AnyArr = DefP, E extends AnyArr = DefE, R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>], R, AnyArr>;
 		/**在 {@link CbCur|`CbCur`} 的基础上还以 {@link P0} 为上次异步的结果，作为 {@link Nxtlike.next|连续异步} 的 {@link Executor|执行器} */
 		type CbNxt<P extends AnyArr = DefP, P0 extends AnyArr = [], E extends AnyArr = DefE, R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>, ...P0], R, AnyArr>;
+		/**任意 {@link CbNxt|连续异步执行器} */
+		type CbNxtN<P extends AnyArr = AnyArr, P0 extends AnyArr = AnyArr, E extends AnyArr = AnyArr, R = any> = CbNxt<P, P0, E, R>;
 		/** 异步执行器，也就是 {@link PromiseConstructor|`Promise`} 的 `executor` 参数 */
 		type Executor<P extends AnyArr = AnyArr, P0 extends AnyArr = AnyArr, E extends AnyArr = AnyArr, R = any> = CbCur<P, E, R> | CbNxt<P, P0, E, R>;
 		/**或有或无计时器 */
@@ -49,8 +51,10 @@ declare global {
 		type ProceFilled<T extends number, A extends AnyArr<ProceN> = []> = T extends 0 ? A : ProceFilled<SntXcrNum<9, T, number>, [ProceN, ...A]>;
 		/**以 {@link D} 为最大深度，从以 {@link P} 为异步结果，以 {@link E} 为异步异常的 {@link Proce|`Proce`} 中提取得到的 {@link Proce|`Proce`} */
 		type ProceTaked<P extends AnyArr, E extends AnyArr, D extends number = -1> = D extends 0 ? Proce<P, E> : P extends readonly [Proce<infer PI, infer EI>, ...AnyArr] ? (number extends D ? Proce<P, E> : never) | ProceTaked<PI, EI | E, SntXcrNum<9, D, number>> : Proce<P, E>;
-		// type SnakeList<T extends any[][], E extends any[] = [any]> = T extends [infer P0 extends any[], infer P extends any[], ...infer K extends any[]] ? [CbNxt<P, P0, E>, ...SnakeList<[P, ...K], E>] : []
-		// type SnakeRslt<T extends any[], F = 0> = T extends [CbNxt<infer P, infer S>, ...infer K extends any[]] ? [...(F extends 0 ? [S, P] : [P]), ...SnakeRslt<K, 1>] : [];
+		// type SnakeExpr<T extends AnyArr, E extends AnyArr = DefE, R extends AnyArr = []> = T extends readonly [infer P0 extends AnyArr, infer P extends AnyArr, ...infer K] ? SnakeExpr<[P, ...K], E, [...R, CbNxt<P, P0, E>]> : R;
+		// type A = SnakeExpr<[[1, 2, 3], [1], [3]]>;
+		// type SnakePArr<T extends AnyArr, F = 0, R extends AnyArr = []> = T extends readonly [CbNxt<infer P, infer S>, ...infer K] ? SnakePArr<K, 1, [...R, ...(F extends 0 ? [S, P] : [P])]> : R;
+		// type B = SnakePArr<[CbNxt<[1], [1, 2, 3]>, CbNxt<[3], [1]>]>;
 		/**以 {@link Nxtlike.one|`Proce#one`} 的形式处理的异步结果 */
 		type OnedArgs<T extends AnyArr> = T extends AnyArr<infer K> ? ProceArgs<K> : never;
 		/**以 {@link Nxtlike.all|`Proce#all`} 的形式处理的异步结果 */
@@ -86,7 +90,7 @@ declare global {
 			/**得到一个以 {@link n} 为未捕获异步错误的已经完成的 {@link Proce|`Proce`} 实例 */
 			ordo<A extends Accur<A>, E1 extends A[]>(...n: E1): Proce<[], E1>;
 			/**异步一个接一个 */
-			snake<T extends AnyArr<CbNxt> | CbNxt, N extends T[]>(...n: [...N]): t.sn<ListArrGot<N>>;
+			snake<N extends AnyArr<CbNxtN | AnyArr<CbNxtN>>>(...n: N | [[...N]]): Proce<N extends readonly [...any[], CbNxtN<infer S>] ? S : DefP, E | DefE>;
 			/**得到数组中最快完成的 {@link Proce|`Proce`} 的异步结果 */
 			one<A extends Accur<A>, T extends A | AnyArr<A>, N extends T[]>(...n: [...N]): Proce<OnedArgs<ListArrGot<N>>, UedProceE<ListArrGot<N>>>;
 			/**得到数组中所有 {@link Proce|`Proce`} 的异步结果 */
