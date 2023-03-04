@@ -8,48 +8,22 @@ scpoProce 全称 Scpos Process，即为幻想私社用以解决困扰社员二�
 
 本项目既可用于 Node.js 的开发，也可用于前端 HTML 页面中的脚本，最高可兼容 IE5（也就是 ES3 ）。
 
-## 安装
-
-- ### npm
-
-  通过 npm 下载：
-
-  ```bash
-  npm install scpo-proce
-  ```
-
-- ### git
-
-  或者克隆本仓库到本地
-
-  ```bash
-  git clone https://github.com/E0SelmY4V/scpo-proce.git
-  ```
-
 ## 引入
 
-- ### Common JS
+- ### NodeJS
 
   ```javascript
   const scpoProce = require('scpo-proce');
-  ```
-
-- ### Typescript
-
-  ```ts
-  import scpoProce = require('scpo-proce');
-  ```
-
-- ### ES Module
-
-  ```javascript
+  // 或
   import scpoProce from 'scpo-proce';
   ```
 
 - ### HTML
 
   ```html
+  <!--[if IE]><script src="scpo-proce/es3.js"><![endif]-->
   <script src="scpo-proce/main.js"></script>
+  <!--[if IE]></script><![endif]-->
   ```
 
   ```js

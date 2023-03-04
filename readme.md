@@ -8,48 +8,22 @@ With the `await/async`, the convenience it brings can be more violent and stimul
 The *Scpos Process* can not only run under Node.js, but also be used in HTML page development.
 The oldest browser it support is IE5 (ES3).
 
-## Installation
-
-- ### npm
-
-  Install through npm,
-
-  ```bash
-  npm install scpo-proce
-  ```
-
-- ### git
-
-  or you can clone the repo to the local.
-
-  ```bash
-  git clone https://github.com/E0SelmY4V/scpo-proce.git
-  ```
-
 ## Import
 
-- ### Common JS
+- ### NodeJS
 
   ```javascript
   const scpoProce = require('scpo-proce');
-  ```
-
-- ### Typescript
-
-  ```ts
-  import scpoProce = require('scpo-proce');
-  ```
-
-- ### ES Module
-
-  ```javascript
+  // Or
   import scpoProce from 'scpo-proce';
   ```
 
 - ### HTML
 
   ```html
+  <!--[if IE]><script src="scpo-proce/es3.js"><![endif]-->
   <script src="scpo-proce/main.js"></script>
+  <!--[if IE]></script><![endif]-->
   ```
 
   ```js

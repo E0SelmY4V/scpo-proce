@@ -182,18 +182,6 @@ declare global {
 			<P extends AnyArr, E extends AnyArr = DefE>(doexpr: CbCur<P, E>, config?: Config<P, E>): Proce<P, E>;
 			/**得到一个以 {@link arg} 为异步结果的已经完成的 {@link Proce|`Proce`} 实例 */
 			<A extends Accur<A>, P extends A[]>(...arg: P): Proce<P, []>;
-			/**获取 ID */
-			getId(): number;
-			/**执行 {@link _t} 的单个回调 */
-			doRtn<R, T extends ProceN, P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, expr: CbNor<P, R>, param: P | P[0] | E | E[0]): R;
-			/**执行 {@link _t} 的 {@link Executor|异步执行器} */
-			act<R, T extends ProceN, R0 extends AnyArr = [], P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): void;
-			/**执行 {@link _t} 的回调列表 */
-			clear<T extends ProceN, P extends AnyArr = ProceArgs<T>>(_t: T, param: P | P[0]): void;
-			/**为 {@link _t} 使用异常捕获回调处理异常 */
-			exeordo<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, param: E | E[0]): any;
-			/**为 {@link _t} 异步抛出未捕获的异常 */
-			toss<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, errObj: E[0]): void;
 			/**是否在裸浏览器环境下 */
 			notModule: boolean;
 			/**是否有 {@link Object.keys|`Object.keys`} 方法可以用 */
@@ -210,10 +198,24 @@ declare global {
 			arrayFrom<T>(n: ArrayLike<T>): T[];
 			/**得到 `ArrayLike<T> | ArrayLike<ArrayLike<T>>` 中的 `ArrayLike<T>` */
 			getList<N>(list: N): ListGot<N, ArrayLike<any>>;
-			/**@see {@link Proce|异步过程类} */
-			Proce: ProceConstructor;
+			/**获取 ID */
+			getId(): number;
+			/**把 {@link b} 里的东西都浅拷贝到 {@link a} 里 */
+			forIn<A, B>(a: A, b: B): void;
 			/**@see {@link ConfigClass|`Proce` 配置类} */
 			ConfigClass: ConfigClassConstructor;
+			/**执行 {@link _t} 的单个回调 */
+			doRtn<R, T extends ProceN, P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, expr: CbNor<P, R>, param: P | P[0] | E | E[0]): R;
+			/**执行 {@link _t} 的 {@link Executor|异步执行器} */
+			act<R, T extends ProceN, R0 extends AnyArr = [], P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): void;
+			/**执行 {@link _t} 的回调列表 */
+			clear<T extends ProceN, P extends AnyArr = ProceArgs<T>>(_t: T, param: P | P[0]): void;
+			/**为 {@link _t} 使用异常捕获回调处理异常 */
+			exeordo<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, param: E | E[0]): any;
+			/**为 {@link _t} 异步抛出未捕获的异常 */
+			toss<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, errObj: E[0]): void;
+			/**@see {@link Proce|异步过程类} */
+			Proce: ProceConstructor;
 		}
 		/**可以执行 {@link Executor|异步执行器} 的东西 */
 		type Nxtable = ProceN | typeof scpoProce;
