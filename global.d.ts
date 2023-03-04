@@ -6,6 +6,7 @@ import {
 } from 'accurtype';
 
 type AnyArr<T = any> = readonly T[];
+type First<T> = T extends [infer S, ...AnyArr] ? S : undefined;
 declare namespace t {
 	import S = scpoProce;
 	type lu<T, R extends AnyArr = []> = T extends readonly [infer K, ...infer T1] ? lu<T1, [...R, S.ProceArgs<K>]> : [];
@@ -18,8 +19,6 @@ declare namespace t {
 }
 declare global {
 	namespace scpoProce {
-		/**类型参数 {@link T} 作为数组时的第一个元素，或 `undefined` */
-		type First<T> = T extends [infer S, ...AnyArr] ? S : undefined;
 		/**以 {@link P} 和 {@link T} 为参数列表，以 {@link R} 为返回值的函数 */
 		type CbNor<P extends AnyArr = AnyArr, R = any, T extends AnyArr = []> = (...arg: [...P, ...T]) => R;
 		/**以 {@link P} 为异步结果，以 {@link E} 为异步异常，以 {@link R} 为返回值的异步执行器，类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数 */
@@ -32,22 +31,6 @@ declare global {
 		type ListGot<L, T = AnyArr> = L extends ArrayLike<any> ? L[0] extends T ? L[0] : L : L;
 		/**`T[] | [T[], ...any[]]` 中的 `T[]` */
 		type ListArrGot<L extends AnyArr> = [L[0]] extends [AnyArr] ? L[0] : L;
-		/**是否在裸浏览器环境下 */
-		const notModule: boolean;
-		/**是否有 {@link Object.keys|`Object.keys`} 方法可以用 */
-		const hasObject_keys: boolean;
-		/**用来区分 {@link scpoProce|`scpoProce`} 和 {@link Proce|`Proce` 实例} */
-		const isPipe: true;
-		/**以数组形式的参数 {@link p} 调用函数 {@link f} */
-		function apply<P extends AnyArr, R>(f: (...param: [...P]) => R, p: P): R;
-		/**判断 {@link n} 是否是 {@link PromiseLike|`Thenable`} */
-		function isThenable(n: any): n is PromiseLike<any>;
-		/**判断 {@link n} 是否是 {@link ArrayLike|`ArrayLike`} */
-		function isArrayLike(n: any): n is ArrayLike<any>;
-		/**{@link ArrayLike|`ArrayLike`} 转 {@link Array|`Array`} */
-		function arrayFrom<T>(n: ArrayLike<T>): T[];
-		/**得到 `ArrayLike<T> | ArrayLike<ArrayLike<T>>` 中的 `ArrayLike<T>` */
-		function getList<N>(list: N): ListGot<N, ArrayLike<any>>;
 		/**默认异步结果 */
 		type DefP = any[];
 		/**默认异步异常 */
@@ -74,24 +57,43 @@ declare global {
 		type InterProceTool = ProceN['one' | 'all' | 'snake'];
 		/**以 {@link InterProceTool|多 `Proce` 工具} 的形式处理的异步异常 */
 		type UedProceE<T extends AnyArr> = ArrayLtdSplited<T> extends readonly [infer T0, (infer S)[], infer T2] ? t.le<T0> | ProceErrs<S> | t.le<T2> : [];
-		/**获取 ID */
-		function getId(): number;
-		/**执行 {@link _t} 的单个回调 */
-		function doRtn<R, T extends ProceN, P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, expr: CbNor<P, R>, param: P | P[0] | E | E[0]): R;
-		/**执行 {@link _t} 的异步执行器 */
-		function act<R, T extends ProceN, R0 extends AnyArr = [], P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): void;
-		/**执行 {@link _t} 的回调列表 */
-		function clear<T extends ProceN, P extends AnyArr = ProceArgs<T>>(_t: T, param: P | P[0]): void;
-		/**为 {@link _t} 使用异常捕获回调处理异常 */
-		function exeordo<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, param: E | E[0]): any;
-		/**为 {@link _t} 异步抛出未捕获的异常 */
-		function toss<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, errObj: E[0]): void;
+		/**异步类要求开放给用户的部分 */
+		interface Nxtlike<P extends AnyArr, E extends AnyArr> {
+			/**添加回调 */
+			then<RT, E1 extends AnyArr = DefE>(todo?: CbNor<P, RT, AnyArr>): Proce<[RT], E1 | E>;
+			/**添加回调和异常捕获回调 */
+			then<RT, RO = RT, E1 extends AnyArr = DefE>(todo?: CbNor<P, RT, AnyArr>, ordo?: CbNor<E, RO, AnyArr>): Proce<[RT | RO], E1>;
+			/**添加异常捕获回调 */
+			trap<RO, E1 extends AnyArr = DefE>(ordo?: CbNor<E, RO, AnyArr>): Proce<P, E1> | Proce<[RO], E1>;
+			/**再开启一个异步 */
+			next<P1 extends AnyArr, E1 extends AnyArr = DefE>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, AnyArr>, config?: Config<P1, E1>): Proce<P1, E1>;
+			/**以 {@link depth} 为最大深度提取 {@link P} 里的 {@link Proce|`Proce`} */
+			take<D extends number = -1>(depth?: D): ProceTaked<P, E, D>;
+			/**提取到 {@link Proce|`Proce`} 之后给其添加回调和异常捕获回调 */
+			take<RT, RO = RT, D extends number = -1, T1 = ProceTaked<P, E, D>>(todo: t.tf<T1, RT, 0>, ordo?: t.tf<T1, RO, 1>, depth?: D): Proce<[RT | RO], E>;
+			/**提取到 {@link Proce|`Proce`} 之后接着其开启第二次异步 */
+			grab<P1 extends AnyArr, E1 extends AnyArr = DefE, D extends number = -1, PT extends AnyArr = ProceTaked<P, E, D> extends Proce<infer P, AnyArr> ? P : P>(doexpr?: CbNxt<P1, PT, E1>, ordo?: CbNor<E1, any, AnyArr>, depth?: D, config?: Config<P1, E1>): Proce<P1, E1>;
+			/**以回调形式修改配置 */
+			conf<E1>(config?: ConfigN, ordo?: CbNor<E, E1, AnyArr>): Proce<[], [E1]>;
+			/**@see {@link ConfigClassConstructor.configAll|`ConfigClass.configAll`} */
+			configAll(n?: ConfigN): Proce<P, E>;
+			/**得到一个以 {@link n} 为异步结果的已经完成的 {@link Proce|`Proce`} 实例 */
+			todo<A extends Accur<A>, P1 extends A[]>(...n: P1): Proce<P1, []>;
+			/**得到一个以 {@link n} 为未捕获异步错误的已经完成的 {@link Proce|`Proce`} 实例 */
+			ordo<A extends Accur<A>, E1 extends A[]>(...n: E1): Proce<[], E1>;
+			/**异步一个接一个 */
+			snake<T extends AnyArr<CbNxt> | CbNxt, N extends T[]>(...n: [...N]): t.sn<ListArrGot<N>>;
+			/**得到数组中最快完成的 {@link Proce|`Proce`} 的异步结果 */
+			one<A extends Accur<A>, T extends A | AnyArr<A>, N extends T[]>(...n: [...N]): Proce<OnedArgs<ListArrGot<N>>, UedProceE<ListArrGot<N>>>;
+			/**得到数组中所有 {@link Proce|`Proce`} 的异步结果 */
+			all<A extends Accur<A>, T extends A | AnyArr<A>, N extends T[]>(...n: [...N]): Proce<Transposed<UedProce<ListArrGot<N>>>, UedProceE<ListArrGot<N>>>;
+		}
 		/**
 		 * 异步过程类
 		 *
 		 * 类型参数 {@link P} 表示异步结果，类型参数 {@link E} 表示异步异常
 		 */
-		interface Proce<P extends AnyArr, E extends AnyArr> {
+		interface Proce<P extends AnyArr, E extends AnyArr> extends Nxtlike<P, E> {
 			/**异步执行器接受的 `todo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `resolve` 参数) */
 			ftodo: CbNor<P, void>;
 			/**异步执行器接受的 `ordo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `reject` 参数) */
@@ -116,68 +118,13 @@ declare global {
 			config: ConfigClass<P, E>;
 			/**回调处理到的位置 */
 			pointer: number;
-			/**添加回调 */
-			then<RT, E1 extends AnyArr = DefE>(todo?: CbNor<P, RT, AnyArr>): Proce<[RT], E1 | E>;
-			/**添加回调和异常捕获回调 */
-			then<RT, RO = RT, E1 extends AnyArr = DefE>(todo?: CbNor<P, RT, AnyArr>, ordo?: CbNor<E, RO, AnyArr>): Proce<[RT | RO], E1>;
-			/**添加异常捕获回调 */
-			trap<RO, E1 extends AnyArr = DefE>(ordo?: CbNor<E, RO, AnyArr>): Proce<P, E1> | Proce<[RO], E1>;
 			/**@see {@link ProceN.trap|`Proce#trap`} */
 			catch: Proce<P, E>['trap'];
-			/**开启第二次异步 */
-			next<P1 extends AnyArr, E1 extends AnyArr>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, AnyArr>, config?: Config<P1, E1>): Proce<P1, E1>;
-			/**以 {@link depth} 为最大深度提取 {@link P} 里的 {@link Proce|`Proce`} */
-			take<D extends number = -1>(depth?: D): ProceTaked<P, E, D>;
-			/**提取到 {@link Proce|`Proce`} 之后给其添加回调和异常捕获回调 */
-			take<RT, RO = RT, D extends number = -1, T1 = ProceTaked<P, E, D>>(todo: t.tf<T1, RT, 0>, ordo?: t.tf<T1, RO, 1>, depth?: D): Proce<[RT | RO], E>;
-			/**提取到 {@link Proce|`Proce`} 之后接着其开启第二次异步 */
-			grab<P1 extends AnyArr, E1 extends AnyArr, D extends number = -1, PT extends AnyArr = ProceTaked<P, E, D> extends Proce<infer P, AnyArr> ? P : P>(doexpr?: CbNxt<P1, PT, E1>, ordo?: CbNor<E1, any, AnyArr>, depth?: D, config?: Config<P1, E1>): Proce<P1, E1>;
-			/**修改配置 */
-			conf<E1>(config?: ConfigN, ordo?: CbNor<E, E1, AnyArr>): Proce<[], [E1]>;
-			/**@see {@link ConfigClass.configAll|`ConfigClass.configAll`} */
-			configAll(n?: ConfigN): Proce<P, E>;
-			/**@see {@link todo|`scpoProce.todo`} */
-			todo: typeof todo;
-			/**@see {@link ordo|`scpoProce.ordo`} */
-			ordo: typeof ordo;
-			/**@see {@link snake|`scpoProce.snake`} */
-			snake: typeof snake;
-			/**@see {@link one|`scpoProce.one`} */
-			one: typeof one;
-			/**@see {@link all|`scpoProce.all`} */
-			all: typeof all;
 		}
 		interface ProceConstructor {
 			/**构造一个 {@link Proce|异步过程类} */
 			new <P extends AnyArr, E extends AnyArr = DefE>(doexpr?: CbCur<P, E>, config?: Config<P, E>, cleared?: boolean): Proce<P, E>;
 		}
-		const Proce: ProceConstructor;
-		/**得到一个添加了回调和异常捕获回调的 {@link Proce|`Proce`} 实例 */
-		function then<RT, E1 extends AnyArr = DefE>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>): Proce<[RT], E1>;
-		/**得到了一个添加了异常捕获回调 {@link Proce|`Proce`} 实例 */
-		function trap(ordo?: CbNor<[]>): Proce<[], []>;
-		/**开启异步 */
-		function next<P1 extends AnyArr, E1 extends AnyArr>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, config?: Config<P1, E1>): Proce<P1, E1>;
-		/**什么用也没有 */
-		function take(depth?: number): Proce<[], []>;
-		/**@see {@link then|`scpoProce.then`} */
-		function take<RT, E1 extends AnyArr = DefE>(todo?: CbNor<[], RT, any[]>, ordo?: CbNor<[]>, depth?: number): Proce<[RT], E1>;
-		/**@see {@link next|`scpoProce.next`} */
-		function grab<P1 extends AnyArr, E1 extends AnyArr>(doexpr?: CbNxt<P1, [], E1>, ordo?: CbNor<E1, any, any[]>, depth?: number, config?: Config<P1, E1>): Proce<P1, E1>;
-		/**得到一个修改了配置的 {@link Proce|`Proce`} 实例 */
-		function conf<E1>(config?: ConfigN, ordo?: CbNor<[], E1, any[]>): Proce<[], [E1]>;
-		/**@see {@link ConfigClass.configAll|`ConfigClass.configAll`} */
-		function configAll(n?: ConfigN): Proce<[], []>;
-		/**得到一个以 {@link n} 为异步结果的已经完成的 {@link Proce|`Proce`} 实例 */
-		function todo<A extends Accur<A>, P1 extends A[]>(...n: P1): Proce<P1, []>;
-		/**得到一个以 {@link n} 为未捕获异步错误的已经完成的 {@link Proce|`Proce`} 实例 */
-		function ordo<A extends Accur<A>, E1 extends A[]>(...n: E1): Proce<[], E1>;
-		/**异步一个接一个 */
-		function snake<T extends AnyArr<CbNxt> | CbNxt, N extends T[]>(...n: [...N]): t.sn<ListArrGot<N>>;
-		/**得到数组中最快完成的 {@link Proce|`Proce`} 的异步结果 */
-		function one<A extends Accur<A>, T extends A | AnyArr<A>, N extends T[]>(...n: [...N]): Proce<OnedArgs<ListArrGot<N>>, UedProceE<ListArrGot<N>>>;
-		/**得到数组中所有 {@link Proce|`Proce`} 的异步结果 */
-		function all<A extends Accur<A>, T extends A | AnyArr<A>, N extends T[]>(...n: [...N]): Proce<Transposed<UedProce<ListArrGot<N>>>, UedProceE<ListArrGot<N>>>;
 		/**
 		 * {@link Proce|`Proce`} 配置
 		 *
@@ -213,9 +160,9 @@ declare global {
 		/**{@link Proce|`Proce`} 配置类 */
 		interface ConfigClass<P extends AnyArr, E extends AnyArr> extends Config<P, E> {
 			/**修改自己的配置 */
-			set<P1 extends AnyArr, E1 extends AnyArr>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
+			set<P1 extends AnyArr, E1 extends AnyArr = DefE>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
 			/**以 {@link n} 为主，使用自己补充，得到一个新的 {@link ConfigClass|`Proce` 配置类} */
-			get<P1 extends AnyArr, E1 extends AnyArr>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
+			get<P1 extends AnyArr, E1 extends AnyArr = DefE>(n?: Config<P1, E1>): ConfigClass<P1, E1>;
 			actTrap: {} & ConfigN['actTrap'];
 			errlv: {} & ConfigN['errlv'];
 		}
@@ -225,9 +172,47 @@ declare global {
 			/**修改全局默认配置，也就是修改配置类的原型属性 */
 			configAll(n?: ConfigN): void;
 		}
-		const ConfigClass: ConfigClassConstructor;
 		/**任意 {@link ConfigClass|`Proce` 配置类} */
 		type ConfigClassN = ConfigClass<AnyArr, AnyArr>;
+		/**@see {@link scpoProce|`scpoProce`} */
+		interface pipe extends Nxtlike<[], []> {
+			/**以 {@link doexpr|doexpr} 为异步执行器，以 {@link config|config} 为配置选项，来开启一次异步 */
+			<P extends AnyArr, E extends AnyArr = DefE>(doexpr: CbCur<P, E>, config?: Config<P, E>): Proce<P, E>;
+			/**得到一个以 {@link arg} 为异步结果的已经完成的 {@link Proce|`Proce`} 实例 */
+			<A extends Accur<A>, P extends A[]>(...arg: P): Proce<P, []>;
+			/**获取 ID */
+			getId(): number;
+			/**执行 {@link _t} 的单个回调 */
+			doRtn<R, T extends ProceN, P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, expr: CbNor<P, R>, param: P | P[0] | E | E[0]): R;
+			/**执行 {@link _t} 的异步执行器 */
+			act<R, T extends ProceN, R0 extends AnyArr = [], P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): void;
+			/**执行 {@link _t} 的回调列表 */
+			clear<T extends ProceN, P extends AnyArr = ProceArgs<T>>(_t: T, param: P | P[0]): void;
+			/**为 {@link _t} 使用异常捕获回调处理异常 */
+			exeordo<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, param: E | E[0]): any;
+			/**为 {@link _t} 异步抛出未捕获的异常 */
+			toss<T extends ProceN, E extends AnyArr = ProceErrs<T>>(_t: T, errObj: E[0]): void;
+			/**是否在裸浏览器环境下 */
+			notModule: boolean;
+			/**是否有 {@link Object.keys|`Object.keys`} 方法可以用 */
+			hasObject_keys: boolean;
+			/**用来区分 {@link scpoProce|`scpoProce`} 和 {@link Proce|`Proce` 实例} */
+			isPipe: true;
+			/**以数组形式的参数 {@link p} 调用函数 {@link f} */
+			apply<P extends AnyArr, R>(f: (...param: [...P]) => R, p: P): R;
+			/**判断 {@link n} 是否是 {@link PromiseLike|`Thenable`} */
+			isThenable(n: any): n is PromiseLike<any>;
+			/**判断 {@link n} 是否是 {@link ArrayLike|`ArrayLike`} */
+			isArrayLike(n: any): n is ArrayLike<any>;
+			/**{@link ArrayLike|`ArrayLike`} 转 {@link Array|`Array`} */
+			arrayFrom<T>(n: ArrayLike<T>): T[];
+			/**得到 `ArrayLike<T> | ArrayLike<ArrayLike<T>>` 中的 `ArrayLike<T>` */
+			getList<N>(list: N): ListGot<N, ArrayLike<any>>;
+			/**@see {@link Proce|异步过程类} */
+			Proce: ProceConstructor;
+			/**@see {@link ConfigClass|`Proce` 配置类} */
+			ConfigClass: ConfigClassConstructor;
+		}
 		/**可以执行异步执行器的东西 */
 		type Nxtable = ProceN | typeof scpoProce;
 	}
@@ -237,6 +222,5 @@ declare global {
 	 * @license GPL-3.0-or-later
 	 * @link https://github.com/E0SelmY4V/scpo-proce
 	 */
-	function scpoProce<P extends AnyArr, E extends AnyArr = scpoProce.DefE>(doexpr: scpoProce.CbCur<P, E>, config?: scpoProce.Config<P, E>): scpoProce.Proce<P, E>;
-	function scpoProce<A extends Accur<A>, P extends A[]>(...arg: P): scpoProce.Proce<P, []>;
+	var scpoProce: scpoProce.pipe;
 }
