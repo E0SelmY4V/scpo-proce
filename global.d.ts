@@ -21,10 +21,12 @@ declare global {
 	namespace scpoProce {
 		/**以 {@link P} 和 {@link T} 为参数列表，以 {@link R} 为返回值的函数 */
 		type CbNor<P extends AnyArr = AnyArr, R = any, T extends AnyArr = []> = (...arg: [...P, ...T]) => R;
-		/**以 {@link P} 为异步结果，以 {@link E} 为异步异常，以 {@link R} 为返回值的异步执行器，类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数 */
+		/**以 {@link P} 为异步结果，以 {@link E} 为异步异常，以 {@link R} 为返回值的 {@link Executor|异步执行器} */
 		type CbCur<P extends AnyArr = DefP, E extends AnyArr = DefE, R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>], R, AnyArr>;
-		/**在 {@link CbCur|`CbCur`} 的基础上还以 {@link P0} 为上次异步的结果，作为连续异步的执行器 */
+		/**在 {@link CbCur|`CbCur`} 的基础上还以 {@link P0} 为上次异步的结果，作为 {@link Nxtlike.next|连续异步} 的 {@link Executor|执行器} */
 		type CbNxt<P extends AnyArr = DefP, P0 extends AnyArr = [], E extends AnyArr = DefE, R = any> = CbNor<[CbNor<P, void>, CbNor<E, void>, ...P0], R, AnyArr>;
+		/** 异步执行器，也就是 {@link PromiseConstructor|`Promise`} 的 `executor` 参数 */
+		type Executor<P extends AnyArr = AnyArr, P0 extends AnyArr = AnyArr, E extends AnyArr = AnyArr, R = any> = CbCur<P, E, R> | CbNxt<P, P0, E, R>;
 		/**或有或无计时器 */
 		type STimer = ReturnType<typeof setTimeout> | null;
 		/**`ArrayLike<T> | ArrayLike<any>` 中的 `ArrayLike<any>` 或 `T`，其中 `T` 为可选类型参数 {@link T} */
@@ -67,7 +69,7 @@ declare global {
 			trap<RO, E1 extends AnyArr = DefE>(ordo?: CbNor<E, RO, AnyArr>): Proce<P, E1> | Proce<[RO], E1>;
 			/**@see {@link Nxtlike.trap|`Proce#trap`} */
 			catch: Nxtlike<P, E>['trap'];
-			/**再开启一个异步 */
+			/**以 {@link doexpr} 为 {@link Executor|异步执行器} ，以 {@link config} 为配置选项，再开启一个异步 */
 			next<P1 extends AnyArr, E1 extends AnyArr = DefE>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, AnyArr>, config?: Config<P1, E1>): Proce<P1, E1>;
 			/**以 {@link depth} 为最大深度提取 {@link P} 里的 {@link Proce|`Proce`} */
 			take<D extends number = -1>(depth?: D): ProceTaked<P, E, D>;
@@ -96,9 +98,9 @@ declare global {
 		 * 类型参数 {@link P} 表示异步结果，类型参数 {@link E} 表示异步异常
 		 */
 		interface Proce<P extends AnyArr, E extends AnyArr> extends Nxtlike<P, E> {
-			/**异步执行器接受的 `todo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `resolve` 参数) */
+			/** {@link Executor|异步执行器} 接受的 `todo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `resolve` 参数) */
 			ftodo: CbNor<P, void>;
-			/**异步执行器接受的 `ordo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `reject` 参数) */
+			/** {@link Executor|异步执行器} 接受的 `ordo` 参数 (类似 {@link PromiseConstructor|`Promise`} 的 `executor` 参数的 `reject` 参数) */
 			fordo: CbNor<E, void>;
 			/**回调列表 */
 			queuetodo: AnyArr<CbNor<P>>;
@@ -132,7 +134,7 @@ declare global {
 		 */
 		interface Config<P extends AnyArr, E extends AnyArr> {
 			/**
-			 * 是否捕获异步执行器返回的 {@link PromiseLike|`Thenable`} 的异常
+			 * 是否捕获 {@link Executor|异步执行器} 返回的 {@link PromiseLike|`Thenable`} 的异常
 			 * @default true
 			 */
 			actTrap?: boolean | null;
@@ -176,7 +178,7 @@ declare global {
 		type ConfigClassN = ConfigClass<AnyArr, AnyArr>;
 		/**@see {@link scpoProce|`scpoProce`} */
 		interface pipe extends Nxtlike<[], []> {
-			/**以 {@link doexpr|doexpr} 为异步执行器，以 {@link config|config} 为配置选项，来开启一次异步 */
+			/**以 {@link doexpr} 为 {@link Executor|异步执行器} ，以 {@link config} 为配置选项，来开启一次异步 */
 			<P extends AnyArr, E extends AnyArr = DefE>(doexpr: CbCur<P, E>, config?: Config<P, E>): Proce<P, E>;
 			/**得到一个以 {@link arg} 为异步结果的已经完成的 {@link Proce|`Proce`} 实例 */
 			<A extends Accur<A>, P extends A[]>(...arg: P): Proce<P, []>;
@@ -184,7 +186,7 @@ declare global {
 			getId(): number;
 			/**执行 {@link _t} 的单个回调 */
 			doRtn<R, T extends ProceN, P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, expr: CbNor<P, R>, param: P | P[0] | E | E[0]): R;
-			/**执行 {@link _t} 的异步执行器 */
+			/**执行 {@link _t} 的 {@link Executor|异步执行器} */
 			act<R, T extends ProceN, R0 extends AnyArr = [], P extends AnyArr = ProceArgs<T>, E extends AnyArr = ProceErrs<T>>(_t: T, doexpr: CbNxt<P, R0, E, R> | CbCur<P, E, R>, args: R0): void;
 			/**执行 {@link _t} 的回调列表 */
 			clear<T extends ProceN, P extends AnyArr = ProceArgs<T>>(_t: T, param: P | P[0]): void;
@@ -213,7 +215,7 @@ declare global {
 			/**@see {@link ConfigClass|`Proce` 配置类} */
 			ConfigClass: ConfigClassConstructor;
 		}
-		/**可以执行异步执行器的东西 */
+		/**可以执行 {@link Executor|异步执行器} 的东西 */
 		type Nxtable = ProceN | typeof scpoProce;
 	}
 	/**
