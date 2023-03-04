@@ -49,11 +49,11 @@ declare global {
 		type ProceTaked<P extends AnyArr, E extends AnyArr, D extends number = -1> = D extends 0 ? Proce<P, E> : P extends readonly [Proce<infer PI, infer EI>, ...AnyArr] ? (number extends D ? Proce<P, E> : never) | ProceTaked<PI, EI | E, SntXcrNum<9, D, number>> : Proce<P, E>;
 		// type SnakeList<T extends any[][], E extends any[] = [any]> = T extends [infer P0 extends any[], infer P extends any[], ...infer K extends any[]] ? [CbNxt<P, P0, E>, ...SnakeList<[P, ...K], E>] : []
 		// type SnakeRslt<T extends any[], F = 0> = T extends [CbNxt<infer P, infer S>, ...infer K extends any[]] ? [...(F extends 0 ? [S, P] : [P]), ...SnakeRslt<K, 1>] : [];
-		/**以 {@link ProceN.one|`Proce#one`} 的形式处理的异步结果 */
+		/**以 {@link Nxtlike.one|`Proce#one`} 的形式处理的异步结果 */
 		type OnedArgs<T extends AnyArr> = T extends AnyArr<infer K> ? ProceArgs<K> : never;
-		/**以 {@link ProceN.all|`Proce#all`} 的形式处理的异步结果 */
+		/**以 {@link Nxtlike.all|`Proce#all`} 的形式处理的异步结果 */
 		type UedProce<T extends AnyArr> = ArrayLtdSplited<T> extends readonly [infer T0, (infer S)[], infer T2] ? [...t.lu<T0>, ...([ProceArgs<S>] extends [never] ? [] : ProceArgs<S>[]), ...t.lu<T2>] : [];
-		/**多 {@link Proce|`Proce`} 工具。包含 {@link ProceN.one|`Proce#one`}、{@link ProceN.all|`Proce#all`}、{@link ProceN.snake|`Proce#snake`} */
+		/**多 {@link Proce|`Proce`} 工具。包含 {@link Nxtlike.one|`Proce#one`}、{@link Nxtlike.all|`Proce#all`}、{@link Nxtlike.snake|`Proce#snake`} */
 		type InterProceTool = ProceN['one' | 'all' | 'snake'];
 		/**以 {@link InterProceTool|多 `Proce` 工具} 的形式处理的异步异常 */
 		type UedProceE<T extends AnyArr> = ArrayLtdSplited<T> extends readonly [infer T0, (infer S)[], infer T2] ? t.le<T0> | ProceErrs<S> | t.le<T2> : [];
@@ -65,6 +65,8 @@ declare global {
 			then<RT, RO = RT, E1 extends AnyArr = DefE>(todo?: CbNor<P, RT, AnyArr>, ordo?: CbNor<E, RO, AnyArr>): Proce<[RT | RO], E1>;
 			/**添加异常捕获回调 */
 			trap<RO, E1 extends AnyArr = DefE>(ordo?: CbNor<E, RO, AnyArr>): Proce<P, E1> | Proce<[RO], E1>;
+			/**@see {@link Nxtlike.trap|`Proce#trap`} */
+			catch: Nxtlike<P, E>['trap'];
 			/**再开启一个异步 */
 			next<P1 extends AnyArr, E1 extends AnyArr = DefE>(doexpr?: CbNxt<P1, P, E1>, ordo?: CbNor<E1, any, AnyArr>, config?: Config<P1, E1>): Proce<P1, E1>;
 			/**以 {@link depth} 为最大深度提取 {@link P} 里的 {@link Proce|`Proce`} */
@@ -118,8 +120,6 @@ declare global {
 			config: ConfigClass<P, E>;
 			/**回调处理到的位置 */
 			pointer: number;
-			/**@see {@link ProceN.trap|`Proce#trap`} */
-			catch: Proce<P, E>['trap'];
 		}
 		interface ProceConstructor {
 			/**构造一个 {@link Proce|异步过程类} */

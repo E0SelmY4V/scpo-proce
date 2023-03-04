@@ -299,6 +299,7 @@
 		'trap',
 		'next',
 		'take',
+		'catch',
 		'grab',
 		'conf',
 		'configAll',
