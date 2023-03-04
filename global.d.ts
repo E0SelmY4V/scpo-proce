@@ -18,6 +18,13 @@ declare namespace t {
 	// type sn<T> = S.Proce<T extends AnyArr<S.CbNxt<infer P1>> ? P1 : S.DefP, T extends AnyArr<S.CbNxt<AnyArr, AnyArr, infer E1>> ? E1 : S.DefE> extends S.Proce<infer P, infer E> ? S.Proce<P, E> : S.DefProce;
 }
 declare global {
+	/**
+	 * 幻想私社异步过程类
+	 * @version 2.10304.0
+	 * @license GPL-3.0-or-later
+	 * @link https://github.com/E0SelmY4V/scpo-proce
+	 */
+	var scpoProce: scpoProce.pipe;
 	namespace scpoProce {
 		/**以 {@link P} 和 {@link T} 为参数列表，以 {@link R} 为返回值的函数 */
 		type CbNor<P extends AnyArr = AnyArr, R = any, T extends AnyArr = []> = (...arg: [...P, ...T]) => R;
@@ -236,11 +243,4 @@ declare global {
 		/**可以执行 {@link Executor|异步执行器} 的东西 */
 		type Nxtable = ProceN | typeof scpoProce;
 	}
-	/**
-	 * 幻想私社异步过程类
-	 * @version 2.10124.0
-	 * @license GPL-3.0-or-later
-	 * @link https://github.com/E0SelmY4V/scpo-proce
-	 */
-	var scpoProce: scpoProce.pipe;
 }
